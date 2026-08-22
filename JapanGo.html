@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
+<title>Kago</title>
+<style>
+:root{
+  --bg:#f5f5f7;--card:#fff;--text:#1d1d1f;--text2:#86868b;
+  --accent:#0071e3;--success:#34c759;--error:#ff3b30;
+  --sel:#e8f2ff;--shadow:0 4px 20px rgba(0,0,0,.06);
+  --shadow-lg:0 12px 40px rgba(0,0,0,.08);--r:20px;--rs:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;outline:none!important}
+button,input{outline:none!important;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+  background:var(--bg);color:var(--text);min-height:100dvh;padding:18px 14px 36px;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+.container{max-width:440px;margin:0 auto;position:relative}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;padding:0 2px}
+.logo{font-size:18px;font-weight:700;letter-spacing:-.4px}
+.score-badge{
+  background:var(--card);padding:8px 15px;border-radius:100px;font-size:14px;font-weight:600;
+  box-shadow:var(--shadow);cursor:pointer;border:none;font-family:inherit;color:var(--text);
+  transition:transform .25s cubic-bezier(.34,1.56,.64,1);
+}
+.score-badge:active{transform:scale(.94)}
+.score-badge.pulse{transform:scale(1.08)}
+.score-value{color:var(--accent);font-variant-numeric:tabular-nums}
+.screen{
+  display:none;opacity:0;transform:translateY(16px) scale(.97);
+  transition:opacity .35s cubic-bezier(.22,1,.36,1),transform .35s cubic-bezier(.22,1,.36,1);
+}
+.screen.active{display:block}
+.screen.show{opacity:1;transform:translateY(0) scale(1)}
+.screen.hide{opacity:0;transform:translateY(-12px) scale(.97)}
+.home-hero{text-align:center;padding:32px 10px 28px}
+.home-hero .big{font-size:48px;font-weight:700;letter-spacing:-1px;margin-bottom:6px}
+.home-hero .sub{font-size:15px;color:var(--text2);font-weight:500}
+.game-list{display:flex;flex-direction:column;gap:12px}
+.game-card{
+  background:var(--card);border-radius:var(--r);box-shadow:var(--shadow-lg);
+  padding:22px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;
+  border:none;width:100%;text-align:left;font-family:inherit;color:var(--text);
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1);
+}
+.game-card:active{transform:scale(.97)}
+.game-icon{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.game-icon.blue{background:#e8f2ff}.game-icon.purple{background:#f3e8ff}
+.game-info h3{font-size:17px;font-weight:650;margin-bottom:3px}
+.game-info p{font-size:13px;color:var(--text2);line-height:1.35}
+.game-arrow{margin-left:auto;color:var(--text2);font-size:22px}
+.card{
+  background:var(--card);border-radius:var(--r);box-shadow:var(--shadow-lg);
+  padding:20px 16px 22px;margin-bottom:12px;position:relative;overflow:hidden;
+}
+.card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.section-title{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.6px}
+.home-btn{
+  width:36px;height:36px;border-radius:50%;background:#f0f0f2;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--text);
+  font-family:inherit;transition:transform .2s,background .15s;flex-shrink:0;
+}
+.home-btn:active{transform:scale(.88);background:#e4e4e8}
+.tabs{display:flex;gap:5px;background:#eeeef0;padding:4px;border-radius:12px;margin-bottom:14px}
+.tab{
+  flex:1;padding:10px 4px;font-size:13px;font-weight:600;border:none;border-radius:9px;
+  background:transparent;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .2s;
+}
+.tab.active{background:#fff;color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.script-row{display:flex;gap:6px;margin-bottom:14px}
+.script-btn{
+  flex:1;padding:10px 4px;font-size:13px;font-weight:600;border:1.5px solid #e5e5ea;
+  border-radius:var(--rs);background:#fafafa;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .2s;
+}
+.script-btn.active{border-color:var(--accent);background:var(--sel);color:var(--accent)}
+.jumlah-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.jumlah-control{display:flex;align-items:center;gap:10px}
+.jumlah-btn{
+  width:36px;height:36px;border-radius:10px;border:none;background:#e8e8ed;font-size:18px;font-weight:600;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;
+}
+.jumlah-btn:active{background:#d8d8de}
+.jumlah-value{font-size:18px;font-weight:700;min-width:26px;text-align:center;font-variant-numeric:tabular-nums}
+.sel-controls{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.sel-btn{
+  padding:8px 14px;font-size:13px;font-weight:600;border:none;border-radius:100px;
+  background:#e8e8ed;color:var(--text);cursor:pointer;font-family:inherit;
+}
+.sel-btn:active{transform:scale(.96)}.sel-btn.accent{background:var(--accent);color:#fff}
+.kana-grid{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:6px;max-height:220px;
+  overflow-y:auto;padding:2px 2px 6px;-webkit-overflow-scrolling:touch;
+}
+.kana-btn{
+  aspect-ratio:1;border:1.5px solid #e5e5ea;border-radius:11px;background:#fafafa;
+  font-size:18px;font-weight:500;cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:1px;font-family:inherit;color:var(--text);transition:all .15s;
+}
+.kana-btn small{font-size:8px;font-weight:500;color:var(--text2)}
+.kana-btn.selected{border-color:var(--accent);background:var(--sel);color:var(--accent);transform:scale(1.03)}
+.kana-btn.selected small{color:var(--accent);opacity:.85}
+.kana-btn:active{transform:scale(.93)}
+.row-label{grid-column:1/-1;font-size:11px;font-weight:600;color:var(--text2);margin-top:6px;margin-bottom:1px}
+.selected-count{font-size:12px;color:var(--text2);margin-top:8px;text-align:center}
+.start-btn{
+  width:100%;padding:15px;font-size:16px;font-weight:600;border:none;border-radius:var(--rs);
+  background:var(--accent);color:#fff;cursor:pointer;font-family:inherit;margin-top:10px;
+}
+.start-btn:active{transform:scale(.97)}.start-btn:disabled{background:#c7c7cc;cursor:not-allowed}
+.display-kana{
+  font-size:clamp(34px,9vw,50px);font-weight:500;letter-spacing:5px;text-align:center;
+  min-height:62px;display:flex;align-items:center;justify-content:center;margin:6px 0 4px;
+  transition:opacity .3s,transform .3s cubic-bezier(.22,1,.36,1);
+}
+.display-kana.fade-out{opacity:0;transform:scale(.94) translateY(6px)}
+.display-kana.fade-in{opacity:1;transform:scale(1) translateY(0)}
+.display-roma{
+  font-size:clamp(22px,6vw,30px);font-weight:600;letter-spacing:3px;text-align:center;
+  color:var(--accent);min-height:38px;margin:4px 0 12px;text-transform:uppercase;
+}
+.input-label{font-size:13px;color:var(--text2);margin-bottom:8px;font-weight:500;display:block}
+input[type=text]{
+  width:100%;padding:14px 15px;font-size:17px;border:1.5px solid #e5e5ea;border-radius:var(--rs);
+  background:#fafafa;color:var(--text);outline:none!important;font-family:inherit;margin-bottom:12px;
+  transition:border-color .2s,background .2s;-webkit-appearance:none;
+}
+input[type=text]:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 4px rgba(0,113,227,.12)}
+input[type=text]::placeholder{color:#c7c7cc}
+.btn-row{display:flex;gap:10px;margin-bottom:6px}
+button.main{
+  flex:1;padding:14px 10px;font-size:15px;font-weight:600;border:none;border-radius:var(--rs);
+  cursor:pointer;font-family:inherit;transition:transform .18s cubic-bezier(.34,1.56,.64,1);
+}
+button.main:active{transform:scale(.96)}
+.btn-primary{background:var(--accent);color:#fff}.btn-secondary{background:#e8e8ed;color:var(--text)}
+.feedback{
+  min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  opacity:0;transform:translateY(10px);transition:opacity .35s,transform .35s cubic-bezier(.22,1,.36,1);
+}
+.feedback.show{opacity:1;transform:translateY(0)}
+.feedback-icon{font-size:24px}.feedback-text{font-size:16px;font-weight:600}
+.feedback-detail{font-size:13px;color:var(--text2);text-align:center;line-height:1.35}
+.feedback.success .feedback-text{color:var(--success)}.feedback.error .feedback-text{color:var(--error)}
+.card.shake{animation:shake .5s cubic-bezier(.36,.07,.19,.97)}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}15%{transform:translateX(-7px)}30%{transform:translateX(7px)}
+  45%{transform:translateX(-5px)}60%{transform:translateX(5px)}75%{transform:translateX(-2px)}
+}
+.particles{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:var(--r)}
+.particle{position:absolute;width:7px;height:7px;border-radius:50%;opacity:0;animation:pop .75s cubic-bezier(.22,1,.36,1) forwards}
+@keyframes pop{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0)}}
+.romaji-hint{text-align:center;font-size:15px;color:var(--text2);font-weight:500;margin-bottom:8px;letter-spacing:1px}
+.slots{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;min-height:64px;margin:10px 0 18px;align-items:center}
+.slot{
+  width:52px;height:56px;border-radius:14px;border:2px dashed #d1d1d6;background:#fafafa;
+  display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:500;
+  transition:border-color .2s,background .2s,transform .25s;
+}
+.slot.filled{border-style:solid;border-color:var(--accent);background:var(--sel);color:var(--accent)}
+.slot.correct{border-color:var(--success);background:#e8f8ec;color:var(--success);animation:slotPop .35s cubic-bezier(.34,1.56,.64,1)}
+.slot.wrong{border-color:var(--error);background:#ffeaea;color:var(--error);animation:shake .4s ease}
+@keyframes slotPop{0%{transform:scale(.6)}100%{transform:scale(1)}}
+.pool{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;min-height:60px;margin-bottom:14px}
+.pool-letter{
+  width:52px;height:56px;border-radius:14px;background:#fff;border:1.5px solid #e5e5ea;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);display:flex;align-items:center;justify-content:center;
+  font-size:26px;font-weight:500;cursor:pointer;font-family:inherit;color:var(--text);
+  transition:transform .2s,opacity .25s,box-shadow .2s;user-select:none;
+}
+.pool-letter:active{transform:scale(.9)}
+.pool-letter.used{opacity:0;pointer-events:none;transform:scale(.4)}
+.pool-letter.locked{pointer-events:none;opacity:.45}
+.fly-letter{
+  position:fixed;z-index:300;pointer-events:none;
+  width:52px;height:56px;border-radius:14px;background:#fff;border:1.5px solid var(--accent);
+  box-shadow:0 4px 16px rgba(0,113,227,.25);display:flex;align-items:center;justify-content:center;
+  font-size:26px;font-weight:500;color:var(--accent);
+  transition:left .4s cubic-bezier(.22,1,.36,1),top .4s cubic-bezier(.22,1,.36,1),transform .4s cubic-bezier(.22,1,.36,1),opacity .15s;
+}
+.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0);backdrop-filter:blur(0);
+  -webkit-backdrop-filter:blur(0);z-index:100;display:flex;align-items:center;justify-content:center;
+  padding:20px;pointer-events:none;transition:background .3s,backdrop-filter .3s;
+}
+.overlay.show{background:rgba(0,0,0,.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);pointer-events:auto}
+.modal{
+  background:var(--card);border-radius:22px;padding:26px 22px;width:100%;max-width:300px;
+  box-shadow:0 24px 64px rgba(0,0,0,.22);transform:scale(.82) translateY(28px);opacity:0;
+  transition:transform .4s cubic-bezier(.22,1,.36,1),opacity .3s;
+}
+.overlay.show .modal{transform:scale(1) translateY(0);opacity:1}
+.modal-title{font-size:18px;font-weight:650;margin-bottom:6px;text-align:center}
+.modal-desc{font-size:14px;color:var(--text2);text-align:center;margin-bottom:22px;line-height:1.4}
+.modal-btns{display:flex;gap:10px}
+.modal-btn{flex:1;padding:13px;font-size:15px;font-weight:600;border:none;border-radius:12px;cursor:pointer;font-family:inherit;transition:transform .15s}
+.modal-btn:active{transform:scale(.96)}
+.modal-btn.cancel{background:#e8e8ed;color:var(--text)}.modal-btn.danger{background:var(--error);color:#fff}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">カ JapanGo</div>
+    <button class="score-badge" id="scoreBadge">Skor <span class="score-value" id="scoreValue">0</span>/7500</button>
+  </div>
+
+  <div class="screen active show" id="screenHome">
+    <div class="home-hero">
+      <div class="big">ジャパンゴ</div>
+      <div class="sub">Latihan Hiragana &amp; Katakana</div>
+    </div>
+    <div class="game-list">
+      <button class="game-card" id="goLatihan">
+        <div class="game-icon blue">🗒️</div>
+        <div class="game-info"><h3>Ketik Huruf</h3><p>Kana ↔ Romaji, pilih huruf sendiri</p></div>
+        <span class="game-arrow">›</span>
+      </button>
+      <button class="game-card" id="goSusun">
+        <div class="game-icon purple">👾</div>
+        <div class="game-info"><h3>Susun Huruf</h3><p>Susun huruf acak ke urutan benar</p></div>
+        <span class="game-arrow">›</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="screen" id="screenLatihanSetup">
+    <div class="card">
+      <div class="card-top">
+        <div class="section-title">Pengaturan Latihan</div>
+        <button class="home-btn" data-go="screenHome">⌂</button>
+      </div>
+      <div class="section-title">Mode Soal</div>
+      <div class="tabs">
+        <button class="tab active" data-mode="kana2roma">Kana → Romaji</button>
+        <button class="tab" data-mode="roma2kana">Romaji → Kana</button>
+      </div>
+      <div class="section-title">Jenis Huruf</div>
+      <div class="script-row">
+        <button class="script-btn active" data-script="hiragana">Hiragana</button>
+        <button class="script-btn" data-script="katakana">Katakana</button>
+        <button class="script-btn" data-script="mix">Campur</button>
+      </div>
+      <div class="section-title">Jumlah Huruf per Soal</div>
+      <div class="jumlah-row">
+        <div class="jumlah-control">
+          <button class="jumlah-btn" id="jMin">−</button>
+          <span class="jumlah-value" id="jVal">3</span>
+          <button class="jumlah-btn" id="jPlus">+</button>
+        </div>
+      </div>
+      <div class="section-title">Pilih Huruf</div>
+      <div class="sel-controls">
+        <button class="sel-btn accent" id="btnAll">Pilih Semua</button>
+        <button class="sel-btn" id="btnNone">Hapus</button>
+        <button class="sel-btn" id="btnRandom">Acak</button>
+      </div>
+      <div class="kana-grid" id="gridL"></div>
+      <div class="selected-count" id="cntL">0 huruf dipilih</div>
+      <button class="start-btn" id="startL" disabled>Mulai Latihan</button>
+    </div>
+  </div>
+
+  <div class="screen" id="screenLatihanPlay">
+    <div class="card" id="cardL">
+      <div class="particles" id="partL"></div>
+      <div class="card-top">
+        <div class="section-title" id="labelL">Baca huruf ini</div>
+        <button class="home-btn" data-go="screenHome">⌂</button>
+      </div>
+      <div class="display-kana fade-in" id="dispKana"></div>
+      <div class="display-roma" id="dispRoma" style="display:none"></div>
+      <label class="input-label" id="labelIn" for="ans">Ketik jawaban</label>
+      <input type="text" id="ans" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <div class="btn-row">
+        <button class="main btn-secondary" id="btnNew">Soal Baru</button>
+        <button class="main btn-primary" id="btnCheck">Cek Jawaban</button>
+      </div>
+      <div class="feedback" id="fbL">
+        <div class="feedback-icon" id="fbIconL"></div>
+        <div class="feedback-text" id="fbTextL"></div>
+        <div class="feedback-detail" id="fbDetL"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="screenSusunSetup">
+    <div class="card">
+      <div class="card-top">
+        <div class="section-title">Pengaturan Susun Huruf</div>
+        <button class="home-btn" data-go="screenHome">⌂</button>
+      </div>
+      <div class="section-title">Jenis Huruf</div>
+      <div class="script-row">
+        <button class="script-btn active" data-script-s="hiragana">Hiragana</button>
+        <button class="script-btn" data-script-s="katakana">Katakana</button>
+        <button class="script-btn" data-script-s="mix">Campur</button>
+      </div>
+      <div class="section-title">Jumlah Huruf</div>
+      <div class="jumlah-row">
+        <div class="jumlah-control">
+          <button class="jumlah-btn" id="jMinS">−</button>
+          <span class="jumlah-value" id="jValS">4</span>
+          <button class="jumlah-btn" id="jPlusS">+</button>
+        </div>
+      </div>
+      <div class="section-title">Pilih Huruf</div>
+      <div class="sel-controls">
+        <button class="sel-btn accent" id="btnAllS">Pilih Semua</button>
+        <button class="sel-btn" id="btnNoneS">Hapus</button>
+        <button class="sel-btn" id="btnRandomS">Acak</button>
+      </div>
+      <div class="kana-grid" id="gridS"></div>
+      <div class="selected-count" id="cntS">0 huruf dipilih</div>
+      <button class="start-btn" id="startS" disabled>Mulai Susun</button>
+    </div>
+  </div>
+
+  <div class="screen" id="screenSusunPlay">
+    <div class="card" id="cardS">
+      <div class="particles" id="partS"></div>
+      <div class="card-top">
+        <div class="section-title">Susun huruf ini</div>
+        <button class="home-btn" data-go="screenHome">⌂</button>
+      </div>
+      <div class="romaji-hint" id="hintS"></div>
+      <div class="slots" id="slots"></div>
+      <div class="pool" id="pool"></div>
+      <div class="btn-row">
+        <button class="main btn-secondary" id="btnResetS">Ulangi</button>
+        <button class="main btn-primary" id="btnNewS">Soal Baru</button>
+      </div>
+      <div class="feedback" id="fbS">
+        <div class="feedback-icon" id="fbIconS"></div>
+        <div class="feedback-text" id="fbTextS"></div>
+        <div class="feedback-detail" id="fbDetS"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="resetOverlay">
+  <div class="modal">
+    <div class="modal-title">Reset Skor?</div>
+    <div class="modal-desc">Skor akan kembali ke 0.</div>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" id="btnCancelR">Batal</button>
+      <button class="modal-btn danger" id="btnOkR">Reset</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const H=[
+{k:"あ",r:"a"},{k:"い",r:"i"},{k:"う",r:"u"},{k:"え",r:"e"},{k:"お",r:"o"},
+{k:"か",r:"ka"},{k:"き",r:"ki"},{k:"く",r:"ku"},{k:"け",r:"ke"},{k:"こ",r:"ko"},
+{k:"さ",r:"sa"},{k:"し",r:"shi"},{k:"す",r:"su"},{k:"せ",r:"se"},{k:"そ",r:"so"},
+{k:"た",r:"ta"},{k:"ち",r:"chi"},{k:"つ",r:"tsu"},{k:"て",r:"te"},{k:"と",r:"to"},
+{k:"な",r:"na"},{k:"に",r:"ni"},{k:"ぬ",r:"nu"},{k:"ね",r:"ne"},{k:"の",r:"no"},
+{k:"は",r:"ha"},{k:"ひ",r:"hi"},{k:"ふ",r:"fu"},{k:"へ",r:"he"},{k:"ほ",r:"ho"},
+{k:"ま",r:"ma"},{k:"み",r:"mi"},{k:"む",r:"mu"},{k:"め",r:"me"},{k:"も",r:"mo"},
+{k:"や",r:"ya"},{k:"ゆ",r:"yu"},{k:"よ",r:"yo"},
+{k:"ら",r:"ra"},{k:"り",r:"ri"},{k:"る",r:"ru"},{k:"れ",r:"re"},{k:"ろ",r:"ro"},
+{k:"わ",r:"wa"},{k:"を",r:"wo"},{k:"ん",r:"n"},
+{k:"が",r:"ga"},{k:"ぎ",r:"gi"},{k:"ぐ",r:"gu"},{k:"げ",r:"ge"},{k:"ご",r:"go"},
+{k:"ざ",r:"za"},{k:"じ",r:"ji"},{k:"ず",r:"zu"},{k:"ぜ",r:"ze"},{k:"ぞ",r:"zo"},
+{k:"だ",r:"da"},{k:"ぢ",r:"ji"},{k:"づ",r:"zu"},{k:"で",r:"de"},{k:"ど",r:"do"},
+{k:"ば",r:"ba"},{k:"び",r:"bi"},{k:"ぶ",r:"bu"},{k:"べ",r:"be"},{k:"ぼ",r:"bo"},
+{k:"ぱ",r:"pa"},{k:"ぴ",r:"pi"},{k:"ぷ",r:"pu"},{k:"ぺ",r:"pe"},{k:"ぽ",r:"po"}
+];
+const K=[
+{k:"ア",r:"a"},{k:"イ",r:"i"},{k:"ウ",r:"u"},{k:"エ",r:"e"},{k:"オ",r:"o"},
+{k:"カ",r:"ka"},{k:"キ",r:"ki"},{k:"ク",r:"ku"},{k:"ケ",r:"ke"},{k:"コ",r:"ko"},
+{k:"サ",r:"sa"},{k:"シ",r:"shi"},{k:"ス",r:"su"},{k:"セ",r:"se"},{k:"ソ",r:"so"},
+{k:"タ",r:"ta"},{k:"チ",r:"chi"},{k:"ツ",r:"tsu"},{k:"テ",r:"te"},{k:"ト",r:"to"},
+{k:"ナ",r:"na"},{k:"ニ",r:"ni"},{k:"ヌ",r:"nu"},{k:"ネ",r:"ne"},{k:"ノ",r:"no"},
+{k:"ハ",r:"ha"},{k:"ヒ",r:"hi"},{k:"フ",r:"fu"},{k:"ヘ",r:"he"},{k:"ホ",r:"ho"},
+{k:"マ",r:"ma"},{k:"ミ",r:"mi"},{k:"ム",r:"mu"},{k:"メ",r:"me"},{k:"モ",r:"mo"},
+{k:"ヤ",r:"ya"},{k:"ユ",r:"yu"},{k:"ヨ",r:"yo"},
+{k:"ラ",r:"ra"},{k:"リ",r:"ri"},{k:"ル",r:"ru"},{k:"レ",r:"re"},{k:"ロ",r:"ro"},
+{k:"ワ",r:"wa"},{k:"ヲ",r:"wo"},{k:"ン",r:"n"},
+{k:"ガ",r:"ga"},{k:"ギ",r:"gi"},{k:"グ",r:"gu"},{k:"ゲ",r:"ge"},{k:"ゴ",r:"go"},
+{k:"ザ",r:"za"},{k:"ジ",r:"ji"},{k:"ズ",r:"zu"},{k:"ゼ",r:"ze"},{k:"ゾ",r:"zo"},
+{k:"ダ",r:"da"},{k:"ヂ",r:"ji"},{k:"ヅ",r:"zu"},{k:"デ",r:"de"},{k:"ド",r:"do"},
+{k:"バ",r:"ba"},{k:"ビ",r:"bi"},{k:"ブ",r:"bu"},{k:"ベ",r:"be"},{k:"ボ",r:"bo"},
+{k:"パ",r:"pa"},{k:"ピ",r:"pi"},{k:"プ",r:"pu"},{k:"ペ",r:"pe"},{k:"ポ",r:"po"}
+];
+
+let score=0,mode="kana2roma",script="hiragana",scriptS="hiragana";
+let jumlah=3,jumlahS=4;
+let sel=new Set(),selS=new Set();
+let curQ=null,answered=false;
+let target=[],filled=[],done=false,busy=false;
+const $=id=>document.getElementById(id);
+
+let currentScreen="screenHome";
+function goTo(id){
+  if(id===currentScreen) return;
+  const prev=$(currentScreen);
+  const next=$(id);
+  prev.classList.add("hide");
+  prev.classList.remove("show");
+  setTimeout(()=>{
+    prev.classList.remove("active","hide");
+    next.classList.add("active");
+    requestAnimationFrame(()=>{ requestAnimationFrame(()=> next.classList.add("show")); });
+    currentScreen=id;
+  },280);
+}
+
+$("goLatihan").onclick=()=>{ renderGrid("gridL",sel,script,false); goTo("screenLatihanSetup"); };
+$("goSusun").onclick=()=>{ renderGrid("gridS",selS,scriptS,true); goTo("screenSusunSetup"); };
+document.querySelectorAll("[data-go]").forEach(b=>{ b.onclick=()=> goTo(b.dataset.go); });
+
+$("scoreBadge").onclick=()=> $("resetOverlay").classList.add("show");
+$("btnCancelR").onclick=()=> $("resetOverlay").classList.remove("show");
+$("btnOkR").onclick=()=>{ score=0; $("scoreValue").textContent="0"; $("resetOverlay").classList.remove("show"); };
+$("resetOverlay").onclick=e=>{ if(e.target===$("resetOverlay")) $("resetOverlay").classList.remove("show"); };
+
+function addScore(n){
+  const p=score; score=Math.min(7500,score+n);
+  $("scoreValue").textContent=score;
+  if(score>p){ $("scoreBadge").classList.add("pulse"); setTimeout(()=>$("scoreBadge").classList.remove("pulse"),380); }
+}
+
+function renderGrid(gridId, set, scr, isS){
+  const grid=$(gridId); grid.innerHTML=""; set.clear();
+  const cnt=$(isS?"cntS":"cntL");
+  const start=$(isS?"startS":"startL");
+  const upd=()=>{ cnt.textContent=set.size+" huruf dipilih"; start.disabled=set.size===0; };
+  function add(item,idx,src){
+    const b=document.createElement("button");
+    b.className="kana-btn"; b.dataset.idx=idx; b.dataset.src=src;
+    b.innerHTML=item.k+"<small>"+item.r+"</small>";
+    b.onclick=()=>{
+      const key=src+idx;
+      if(set.has(key)){ set.delete(key); b.classList.remove("selected"); }
+      else{ set.add(key); b.classList.add("selected"); }
+      upd();
+    };
+    grid.appendChild(b);
+  }
+  if(scr==="mix"){
+    const lh=document.createElement("div"); lh.className="row-label"; lh.textContent="HIRAGANA"; grid.appendChild(lh);
+    H.forEach((it,i)=>add(it,i,"h"));
+    const lk=document.createElement("div"); lk.className="row-label"; lk.textContent="KATAKANA"; grid.appendChild(lk);
+    K.forEach((it,i)=>add(it,i,"k"));
+  } else {
+    const ch=scr==="katakana"?K:H;
+    const gs=[{l:"A",s:0,e:5},{l:"K",s:5,e:10},{l:"S",s:10,e:15},{l:"T",s:15,e:20},{l:"N",s:20,e:25},{l:"H",s:25,e:30},{l:"M",s:30,e:35},{l:"Y",s:35,e:38},{l:"R",s:38,e:43},{l:"W N",s:43,e:46},{l:"G Z D B",s:46,e:66},{l:"P",s:66,e:71}];
+    gs.forEach(g=>{
+      if(g.s>=ch.length) return;
+      const lab=document.createElement("div"); lab.className="row-label"; lab.textContent=g.l; grid.appendChild(lab);
+      for(let i=g.s;i<Math.min(g.e,ch.length);i++) add(ch[i],i,"s");
+    });
+  }
+  upd();
+}
+
+function getItems(set,scr){
+  const out=[];
+  set.forEach(key=>{
+    const src=key[0], idx=parseInt(key.slice(1));
+    if(src==="h") out.push(H[idx]);
+    else if(src==="k") out.push(K[idx]);
+    else out.push((scr==="katakana"?K:H)[idx]);
+  });
+  return out;
+}
+
+document.querySelectorAll("[data-mode]").forEach(t=>{
+  t.onclick=()=>{ document.querySelectorAll("[data-mode]").forEach(x=>x.classList.remove("active")); t.classList.add("active"); mode=t.dataset.mode; };
+});
+document.querySelectorAll("[data-script]").forEach(b=>{
+  b.onclick=()=>{ document.querySelectorAll("[data-script]").forEach(x=>x.classList.remove("active")); b.classList.add("active"); script=b.dataset.script; renderGrid("gridL",sel,script,false); };
+});
+$("jMin").onclick=()=>{ if(jumlah>1){jumlah--;$("jVal").textContent=jumlah;} };
+$("jPlus").onclick=()=>{ if(jumlah<8){jumlah++;$("jVal").textContent=jumlah;} };
+
+function bindSel(allId,noneId,randId,gridId,set,cntId,startId){
+  $(allId).onclick=()=>{
+    set.clear();
+    document.querySelectorAll("#"+gridId+" .kana-btn").forEach(b=>{ set.add(b.dataset.src+b.dataset.idx); b.classList.add("selected"); });
+    $(cntId).textContent=set.size+" huruf dipilih"; $(startId).disabled=set.size===0;
+  };
+  $(noneId).onclick=()=>{
+    set.clear();
+    document.querySelectorAll("#"+gridId+" .kana-btn").forEach(b=>b.classList.remove("selected"));
+    $(cntId).textContent="0 huruf dipilih"; $(startId).disabled=true;
+  };
+  $(randId).onclick=()=>{
+    set.clear();
+    document.querySelectorAll("#"+gridId+" .kana-btn").forEach(b=>b.classList.remove("selected"));
+    const all=[...document.querySelectorAll("#"+gridId+" .kana-btn")];
+    const n=Math.max(5,Math.floor(all.length*(.3+Math.random()*.3)));
+    all.sort(()=>Math.random()-.5).slice(0,n).forEach(b=>{ set.add(b.dataset.src+b.dataset.idx); b.classList.add("selected"); });
+    $(cntId).textContent=set.size+" huruf dipilih"; $(startId).disabled=set.size===0;
+  };
+}
+bindSel("btnAll","btnNone","btnRandom","gridL",sel,"cntL","startL");
+bindSel("btnAllS","btnNoneS","btnRandomS","gridS",selS,"cntS","startS");
+
+document.querySelectorAll("[data-script-s]").forEach(b=>{
+  b.onclick=()=>{ document.querySelectorAll("[data-script-s]").forEach(x=>x.classList.remove("active")); b.classList.add("active"); scriptS=b.dataset.scriptS; renderGrid("gridS",selS,scriptS,true); };
+});
+$("jMinS").onclick=()=>{ if(jumlahS>2){jumlahS--;$("jValS").textContent=jumlahS;} };
+$("jPlusS").onclick=()=>{ if(jumlahS<8){jumlahS++;$("jValS").textContent=jumlahS;} };
+
+function makeQ(set,scr,n){
+  const pool=getItems(set,scr); if(!pool.length) return null;
+  const num=Math.min(n,pool.length); const picks=[]; const used=new Set();
+  while(picks.length<num){
+    const it=pool[Math.floor(Math.random()*pool.length)];
+    if(pool.length>=num && used.has(it.k)) continue;
+    picks.push(it); used.add(it.k);
+  }
+  return picks;
+}
+
+function showQ(){
+  answered=false; curQ=makeQ(sel,script,jumlah); if(!curQ) return;
+  const ans=$("ans"); ans.value=""; ans.disabled=false;
+  $("fbL").classList.remove("show","success","error");
+  const ks=curQ.map(x=>x.k).join("");
+  const rs=curQ.map(x=>x.r).join(" ");
+  $("dispKana").classList.remove("fade-in"); $("dispKana").classList.add("fade-out");
+  setTimeout(()=>{
+    if(mode==="kana2roma"){
+      $("labelL").textContent="Baca huruf ini";
+      $("dispKana").textContent=ks; $("dispKana").style.display="flex"; $("dispRoma").style.display="none";
+      $("labelIn").textContent="Ketik romaji"; ans.placeholder="contoh: JI DA N";
+    } else {
+      $("labelL").textContent="Tulis huruf Jepang";
+      $("dispKana").style.display="none"; $("dispRoma").style.display="block"; $("dispRoma").textContent=rs.toUpperCase();
+      $("labelIn").textContent="Ketik hurufnya"; ans.placeholder="contoh: あいう";
+    }
+    $("dispKana").classList.remove("fade-out"); $("dispKana").classList.add("fade-in");
+    ans.focus();
+  },250);
+}
+
+function checkL(){
+  if(answered||!curQ) return;
+  const raw=$("ans").value.trim(); if(!raw){ $("ans").focus(); return; }
+  answered=true; $("ans").disabled=true;
+  let ok=false, det="";
+  if(mode==="kana2roma"){
+    const exp=curQ.map(x=>x.r).join("");
+    const u=raw.toLowerCase().replace(/\s+/g,"");
+    ok=u===exp;
+    let m=0; for(let i=0;i<Math.min(u.length,exp.length);i++) if(u[i]===exp[i]) m++;
+    det=ok?"Semua tepat · +10":"Benar "+m+"/"+exp.length+" · "+curQ.map(x=>x.r).join(" ");
+  } else {
+    const exp=curQ.map(x=>x.k).join("");
+    const u=raw.replace(/\s+/g,"");
+    ok=u===exp;
+    let m=0; for(let i=0;i<Math.min(u.length,exp.length);i++) if(u[i]===exp[i]) m++;
+    det=ok?"Semua tepat · +10":"Benar "+m+"/"+exp.length+" · "+exp;
+  }
+  const fb=$("fbL"); fb.classList.remove("success","error"); fb.classList.add("show");
+  if(ok){
+    fb.classList.add("success"); $("fbIconL").textContent="✓"; $("fbTextL").textContent="Benar!"; $("fbDetL").textContent=det;
+    addScore(10); spawn("partL");
+  } else {
+    fb.classList.add("error"); $("fbIconL").textContent="✗"; $("fbTextL").textContent="Belum tepat"; $("fbDetL").textContent=det;
+    $("cardL").classList.add("shake"); setTimeout(()=>$("cardL").classList.remove("shake"),520);
+  }
+}
+
+$("startL").onclick=()=>{ if(sel.size===0) return; goTo("screenLatihanPlay"); setTimeout(showQ,320); };
+$("btnCheck").onclick=checkL;
+$("btnNew").onclick=showQ;
+$("ans").onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); if(!answered) checkL(); else showQ(); } };
+
+function showSusun(){
+  target=makeQ(selS,scriptS,jumlahS); if(!target) return;
+  filled=[]; done=false; busy=false;
+  $("fbS").classList.remove("show","success","error");
+  $("hintS").textContent=target.map(x=>x.r).join(" · ").toUpperCase();
+  const slots=$("slots"); slots.innerHTML="";
+  target.forEach((_,i)=>{ const s=document.createElement("div"); s.className="slot"; s.dataset.i=i; slots.appendChild(s); });
+  const pool=$("pool"); pool.innerHTML="";
+  let sh=[...target].sort(()=>Math.random()-.5);
+  if(sh.length>1 && sh.every((x,i)=>x.k===target[i].k)){ const t=sh[0]; sh[0]=sh[1]; sh[1]=t; }
+  sh.forEach((item)=>{
+    const b=document.createElement("button");
+    b.className="pool-letter"; b.textContent=item.k; b.dataset.k=item.k;
+    b.onclick=()=>tapLetter(b,item);
+    pool.appendChild(b);
+  });
+}
+
+function tapLetter(btn, item){
+  if(done || busy || btn.classList.contains("used")) return;
+  const idx=filled.length;
+  if(idx>=target.length) return;
+  busy=true;
+  document.querySelectorAll("#pool .pool-letter").forEach(b=>b.classList.add("locked"));
+  const slot=document.querySelectorAll("#slots .slot")[idx];
+  const sr=slot.getBoundingClientRect();
+  const br=btn.getBoundingClientRect();
+  const fly=document.createElement("div");
+  fly.className="fly-letter";
+  fly.textContent=item.k;
+  fly.style.left=br.left+"px";
+  fly.style.top=br.top+"px";
+  document.body.appendChild(fly);
+  btn.classList.add("used");
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      fly.style.left=(sr.left+(sr.width-52)/2)+"px";
+      fly.style.top=(sr.top+(sr.height-56)/2)+"px";
+      fly.style.transform="scale(.92)";
+    });
+  });
+  setTimeout(()=>{
+    fly.style.opacity="0";
+    setTimeout(()=>fly.remove(),150);
+    slot.textContent=item.k;
+    slot.classList.add("filled");
+    filled.push(item);
+    busy=false;
+    document.querySelectorAll("#pool .pool-letter:not(.used)").forEach(b=>b.classList.remove("locked"));
+    if(filled.length===target.length) checkSusun();
+  },420);
+}
+
+function checkSusun(){
+  done=true;
+  const slots=document.querySelectorAll("#slots .slot");
+  let ok=true;
+  filled.forEach((it,i)=>{
+    if(it.k===target[i].k) slots[i].classList.add("correct");
+    else{ slots[i].classList.add("wrong"); ok=false; }
+  });
+  const fb=$("fbS"); fb.classList.remove("success","error"); fb.classList.add("show");
+  if(ok){
+    fb.classList.add("success"); $("fbIconS").textContent="✓"; $("fbTextS").textContent="Sempurna!"; $("fbDetS").textContent="Urutan benar · +15";
+    addScore(15); spawn("partS");
+  } else {
+    fb.classList.add("error"); $("fbIconS").textContent="✗"; $("fbTextS").textContent="Masih salah"; $("fbDetS").textContent="Jawaban: "+target.map(x=>x.k).join("");
+    $("cardS").classList.add("shake"); setTimeout(()=>$("cardS").classList.remove("shake"),520);
+  }
+}
+
+function resetSusun(){
+  filled=[]; done=false; busy=false;
+  $("fbS").classList.remove("show","success","error");
+  document.querySelectorAll("#slots .slot").forEach(s=>{ s.textContent=""; s.className="slot"; });
+  document.querySelectorAll("#pool .pool-letter").forEach(b=>{ b.classList.remove("used","locked"); });
+}
+
+$("startS").onclick=()=>{ if(selS.size===0) return; goTo("screenSusunPlay"); setTimeout(showSusun,320); };
+$("btnNewS").onclick=showSusun;
+$("btnResetS").onclick=resetSusun;
+
+function spawn(id){
+  const el=$(id); el.innerHTML="";
+  const cols=["#34c759","#0071e3","#ff9500","#af52de","#ff2d55"];
+  for(let i=0;i<16;i++){
+    const p=document.createElement("div"); p.className="particle";
+    p.style.left="50%"; p.style.top="30%"; p.style.background=cols[i%cols.length];
+    const a=(Math.PI*2*i)/16, d=50+Math.random()*70;
+    p.style.setProperty("--tx",Math.cos(a)*d+"px");
+    p.style.setProperty("--ty",Math.sin(a)*d+"px");
+    p.style.animationDelay=(Math.random()*.12)+"s";
+    el.appendChild(p);
+  }
+}
+</script>
+</body>
+</html>
