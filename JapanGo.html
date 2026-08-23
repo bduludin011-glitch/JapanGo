@@ -1,0 +1,3056 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
+<title>Kago</title>
+<style>
+:root{
+  --bg:#f5f5f7;--card:#fff;--text:#1d1d1f;--text2:#86868b;
+  --accent:#0071e3;--success:#34c759;--error:#ff3b30;
+  --sel:#e8f2ff;--shadow:0 4px 20px rgba(0,0,0,.06);
+  --shadow-lg:0 12px 40px rgba(0,0,0,.08);--r:20px;--rs:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;outline:none!important}
+button,input{outline:none!important;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+  background:var(--bg);color:var(--text);min-height:100dvh;padding:18px 14px 36px;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+.container{max-width:440px;margin:0 auto;position:relative}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;padding:0 2px}
+.logo{font-size:18px;font-weight:700;letter-spacing:-.4px}
+.score-badge{
+  background:var(--card);padding:8px 15px;border-radius:100px;font-size:14px;font-weight:600;
+  box-shadow:var(--shadow);cursor:pointer;border:none;font-family:inherit;color:var(--text);
+  transition:transform .25s cubic-bezier(.34,1.56,.64,1);
+}
+.score-badge:active{transform:scale(.94)}
+.score-badge.pulse{transform:scale(1.08)}
+.score-value{color:var(--accent);font-variant-numeric:tabular-nums}
+.screen{
+  display:none;opacity:0;transform:translateY(16px) scale(.97);
+  transition:opacity .35s cubic-bezier(.22,1,.36,1),transform .35s cubic-bezier(.22,1,.36,1);
+}
+.screen.active{display:block}
+.screen.show{opacity:1;transform:translateY(0) scale(1)}
+.screen.hide{opacity:0;transform:translateY(-12px) scale(.97)}
+.home-hero{text-align:center;padding:32px 10px 28px}
+.home-hero .big{font-size:48px;font-weight:700;letter-spacing:-1px;margin-bottom:6px}
+.home-hero .sub{font-size:15px;color:var(--text2);font-weight:500}
+.game-list{display:flex;flex-direction:column;gap:12px}
+.game-card{
+  background:var(--card);border-radius:var(--r);box-shadow:var(--shadow-lg);
+  padding:22px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;
+  border:none;width:100%;text-align:left;font-family:inherit;color:var(--text);
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1);
+}
+.game-card:active{transform:scale(.97)}
+.game-icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.game-icon.blue{background:linear-gradient(145deg,#e8f2ff,#d6e8ff)}.game-icon.purple{background:linear-gradient(145deg,#f3e8ff,#e8d6ff)}
+.game-info h3{font-size:17px;font-weight:650;margin-bottom:3px}
+.game-info p{font-size:13px;color:var(--text2);line-height:1.35}
+.game-arrow{margin-left:auto;color:var(--text2);font-size:22px}
+.card{
+  background:var(--card);border-radius:var(--r);box-shadow:var(--shadow-lg);
+  padding:20px 16px 22px;margin-bottom:12px;position:relative;overflow:hidden;
+}
+.card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.section-title{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.6px}
+.home-btn{
+  width:36px;height:36px;border-radius:50%;background:#f0f0f2;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--text);
+  font-family:inherit;transition:transform .2s,background .15s;flex-shrink:0;
+}
+.home-btn:active{transform:scale(.88);background:#e4e4e8}
+.tabs{display:flex;gap:5px;background:#eeeef0;padding:4px;border-radius:12px;margin-bottom:14px}
+.tab{
+  flex:1;padding:10px 4px;font-size:13px;font-weight:600;border:none;border-radius:9px;
+  background:transparent;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .2s;
+}
+.tab.active{background:#fff;color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.script-row{display:flex;gap:6px;margin-bottom:14px}
+.script-btn{
+  flex:1;padding:10px 4px;font-size:13px;font-weight:600;border:1.5px solid #e5e5ea;
+  border-radius:var(--rs);background:#fafafa;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .2s;
+}
+.script-btn.active{border-color:var(--accent);background:var(--sel);color:var(--accent)}
+.jumlah-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.jumlah-control{display:flex;align-items:center;gap:10px}
+.jumlah-btn{
+  width:36px;height:36px;border-radius:10px;border:none;background:#e8e8ed;font-size:18px;font-weight:600;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;
+}
+.jumlah-btn:active{background:#d8d8de}
+.jumlah-value{font-size:18px;font-weight:700;min-width:26px;text-align:center;font-variant-numeric:tabular-nums}
+.sel-controls{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.sel-btn{
+  padding:8px 14px;font-size:13px;font-weight:600;border:none;border-radius:100px;
+  background:#e8e8ed;color:var(--text);cursor:pointer;font-family:inherit;
+}
+.sel-btn:active{transform:scale(.96)}.sel-btn.accent{background:var(--accent);color:#fff}
+.kana-grid{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:7px;max-height:360px;
+  overflow-y:auto;padding:4px 2px 8px;-webkit-overflow-scrolling:touch;
+}
+.kana-btn{
+  aspect-ratio:1;border:1.5px solid #e5e5ea;border-radius:12px;background:#fff;
+  font-size:22px;font-weight:500;cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:1px;font-family:inherit;color:var(--text);
+  transition:all .18s;box-shadow:0 2px 6px rgba(0,0,0,.04);
+}
+.kana-btn small{font-size:9px;font-weight:500;color:var(--text2);letter-spacing:.1px;line-height:1.15}
+.kana-btn.selected{border-color:var(--accent);background:var(--sel);color:var(--accent);transform:scale(1.04);box-shadow:0 3px 10px rgba(0,113,227,.14)}
+.kana-btn.selected small{color:var(--accent);opacity:.9}
+.kana-btn:active{transform:scale(.92)}
+.row-label{grid-column:1/-1;font-size:11px;font-weight:600;color:var(--text2);margin-top:8px;margin-bottom:2px;letter-spacing:.4px}
+.selected-count{font-size:12px;color:var(--text2);margin-top:8px;text-align:center}
+.start-btn{
+  width:100%;padding:15px;font-size:16px;font-weight:600;border:none;border-radius:var(--rs);
+  background:var(--accent);color:#fff;cursor:pointer;font-family:inherit;margin-top:10px;
+}
+.start-btn:active{transform:scale(.97)}.start-btn:disabled{background:#c7c7cc;cursor:not-allowed}
+.display-kana{
+  font-size:clamp(52px,14vw,78px);font-weight:500;letter-spacing:10px;text-align:center;
+  min-height:100px;display:flex;align-items:center;justify-content:center;margin:10px 0 8px;
+  transition:opacity .3s,transform .3s cubic-bezier(.22,1,.36,1);
+  background:linear-gradient(145deg,#f8f9fc 0%,#eef1f6 100%);
+  border-radius:18px;padding:14px 16px;border:1.5px solid #e8eaf0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 4px 16px rgba(0,0,0,.04);
+}
+.display-kana.fade-out{opacity:0;transform:scale(.94) translateY(6px)}
+.display-kana.fade-in{opacity:1;transform:scale(1) translateY(0)}
+.display-roma{
+  font-size:clamp(28px,7.5vw,40px);font-weight:600;letter-spacing:4px;text-align:center;
+  color:var(--accent);min-height:48px;margin:6px 0 14px;text-transform:uppercase;
+  background:linear-gradient(145deg,#f0f7ff 0%,#e8f2ff 100%);
+  border-radius:14px;padding:12px 14px;border:1.5px solid #d6e8ff;
+}
+.input-label{font-size:13px;color:var(--text2);margin-bottom:8px;font-weight:500;display:block}
+input[type=text]{
+  width:100%;padding:14px 15px;font-size:17px;border:1.5px solid #e5e5ea;border-radius:var(--rs);
+  background:#fafafa;color:var(--text);outline:none!important;font-family:inherit;margin-bottom:12px;
+  transition:border-color .2s,background .2s;-webkit-appearance:none;
+}
+input[type=text]:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 4px rgba(0,113,227,.12)}
+input[type=text]::placeholder{color:#c7c7cc}
+.btn-row{display:flex;gap:10px;margin-bottom:6px}
+button.main{
+  flex:1;padding:14px 10px;font-size:15px;font-weight:600;border:none;border-radius:var(--rs);
+  cursor:pointer;font-family:inherit;transition:transform .18s cubic-bezier(.34,1.56,.64,1);
+}
+button.main:active{transform:scale(.96)}
+.btn-primary{background:var(--accent);color:#fff}.btn-secondary{background:#e8e8ed;color:var(--text)}
+.feedback{
+  min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  opacity:0;transform:translateY(10px);transition:opacity .35s,transform .35s cubic-bezier(.22,1,.36,1);
+}
+.feedback.show{opacity:1;transform:translateY(0)}
+.feedback-icon{font-size:24px}.feedback-text{font-size:16px;font-weight:600}
+.feedback-detail{font-size:13px;color:var(--text2);text-align:center;line-height:1.35}
+.feedback.success .feedback-text{color:var(--success)}.feedback.error .feedback-text{color:var(--error)}
+.card.shake{animation:shake .5s cubic-bezier(.36,.07,.19,.97)}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}15%{transform:translateX(-7px)}30%{transform:translateX(7px)}
+  45%{transform:translateX(-5px)}60%{transform:translateX(5px)}75%{transform:translateX(-2px)}
+}
+.particles{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:var(--r)}
+.particle{position:absolute;width:7px;height:7px;border-radius:50%;opacity:0;animation:pop .75s cubic-bezier(.22,1,.36,1) forwards}
+@keyframes pop{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0)}}
+.romaji-hint{text-align:center;font-size:15px;color:var(--text2);font-weight:500;margin-bottom:10px;letter-spacing:1.5px}
+.slots{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;min-height:80px;margin:12px 0 20px;align-items:center}
+.slot{
+  min-width:64px;width:64px;height:70px;border-radius:16px;border:2px dashed #d1d1d6;background:#f7f7f9;
+  display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:500;
+  transition:border-color .2s,background .2s,transform .25s,box-shadow .2s;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.04);padding:0 4px;box-sizing:border-box;
+  white-space:nowrap;letter-spacing:-1px;
+}
+.slot.wide{width:92px;min-width:92px;font-size:26px;letter-spacing:0}
+.slot.filled{border-style:solid;border-color:var(--accent);background:var(--sel);color:var(--accent);box-shadow:0 4px 12px rgba(0,113,227,.12)}
+.slot.correct{border-color:var(--success);background:#e8f8ec;color:var(--success);animation:slotPop .35s cubic-bezier(.34,1.56,.64,1);box-shadow:0 4px 12px rgba(52,199,89,.2)}
+.slot.wrong{border-color:var(--error);background:#ffeaea;color:var(--error);animation:shake .4s ease}
+@keyframes slotPop{0%{transform:scale(.6)}100%{transform:scale(1)}}
+.pool{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;min-height:76px;margin-bottom:16px}
+.pool-letter{
+  min-width:64px;width:64px;height:70px;border-radius:16px;background:#fff;border:1.5px solid #e5e5ea;
+  box-shadow:0 3px 10px rgba(0,0,0,.07);display:flex;align-items:center;justify-content:center;
+  font-size:32px;font-weight:500;cursor:pointer;font-family:inherit;color:var(--text);
+  transition:transform .2s,opacity .25s,box-shadow .2s;user-select:none;
+  padding:0 4px;box-sizing:border-box;white-space:nowrap;letter-spacing:-1px;
+}
+.pool-letter.wide{width:92px;min-width:92px;font-size:26px;letter-spacing:0}
+.pool-letter:active{transform:scale(.88)}
+.pool-letter.used{opacity:0;pointer-events:none;transform:scale(.4)}
+.pool-letter.locked{pointer-events:none;opacity:.4}
+.fly-letter{
+  position:fixed;z-index:300;pointer-events:none;
+  min-width:64px;width:64px;height:70px;border-radius:16px;background:#fff;border:1.5px solid var(--accent);
+  box-shadow:0 6px 20px rgba(0,113,227,.28);display:flex;align-items:center;justify-content:center;
+  font-size:32px;font-weight:500;color:var(--accent);padding:0 4px;box-sizing:border-box;
+  white-space:nowrap;letter-spacing:-1px;
+  transition:left .4s cubic-bezier(.22,1,.36,1),top .4s cubic-bezier(.22,1,.36,1),transform .4s cubic-bezier(.22,1,.36,1),opacity .15s;
+}
+.fly-letter.wide{width:92px;min-width:92px;font-size:26px;letter-spacing:0}
+.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0);backdrop-filter:blur(0);
+  -webkit-backdrop-filter:blur(0);z-index:100;display:flex;align-items:center;justify-content:center;
+  padding:20px;pointer-events:none;transition:background .3s,backdrop-filter .3s;
+}
+.overlay.show{background:rgba(0,0,0,.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);pointer-events:auto}
+.modal{
+  background:var(--card);border-radius:22px;padding:26px 22px;width:100%;max-width:300px;
+  box-shadow:0 24px 64px rgba(0,0,0,.22);transform:scale(.82) translateY(28px);opacity:0;
+  transition:transform .4s cubic-bezier(.22,1,.36,1),opacity .3s;
+}
+.overlay.show .modal{transform:scale(1) translateY(0);opacity:1}
+.modal-title{font-size:18px;font-weight:650;margin-bottom:6px;text-align:center}
+.modal-desc{font-size:14px;color:var(--text2);text-align:center;margin-bottom:22px;line-height:1.4}
+.modal-btns{display:flex;gap:10px}
+.modal-btn{flex:1;padding:13px;font-size:15px;font-weight:600;border:none;border-radius:12px;cursor:pointer;font-family:inherit;transition:transform .15s}
+.modal-btn:active{transform:scale(.96)}
+.modal-btn.cancel{background:#e8e8ed;color:var(--text)}.modal-btn.danger{background:var(--error);color:#fff}
+.draw-area{
+  position:relative;width:100%;aspect-ratio:1;max-height:360px;margin:8px 0 12px;
+  border-radius:18px;overflow:hidden;background:#fafafa;border:1.5px solid #e5e5ea;
+  box-shadow:inset 0 2px 8px rgba(0,0,0,.04);
+}
+.draw-area canvas{width:100%;height:100%;display:block;touch-action:none;cursor:crosshair;position:relative;z-index:2}
+.draw-ref{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:clamp(110px,40vw,200px);font-weight:500;color:rgba(0,113,227,.13);
+  pointer-events:none;user-select:none;z-index:1;transition:opacity .25s;line-height:1;
+  white-space:nowrap;letter-spacing:-0.05em;padding:0 8px;box-sizing:border-box;
+}
+.draw-ref.wide{
+  font-size:clamp(70px,26vw,130px);letter-spacing:0;
+}
+.draw-ref.hidden{opacity:0}
+.draw-controls{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.draw-btn{
+  flex:1;min-width:0;padding:11px 8px;font-size:13px;font-weight:600;border:none;border-radius:12px;
+  cursor:pointer;font-family:inherit;transition:transform .15s,background .15s;
+}
+.draw-btn:active{transform:scale(.96)}
+.draw-btn.ghost{background:#e8e8ed;color:var(--text)}
+.draw-btn.ghost.active{background:var(--sel);color:var(--accent);box-shadow:0 0 0 1.5px var(--accent)}
+.draw-btn.warn{background:#fff0f0;color:var(--error)}
+.draw-hint{text-align:center;font-size:24px;font-weight:700;color:var(--accent);letter-spacing:3px;margin-bottom:8px;text-transform:uppercase}
+.switch-row{display:flex;gap:8px;margin-bottom:14px}
+.switch-btn{
+  flex:1;padding:12px;font-size:15px;font-weight:650;border:1.5px solid #e5e5ea;
+  border-radius:14px;background:#fafafa;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .2s;
+}
+.switch-btn.active{border-color:var(--accent);background:var(--sel);color:var(--accent)}
+.detail-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.detail-overlay.show{opacity:1;pointer-events:auto}
+.detail-modal{
+  background:var(--card);border-radius:24px;padding:28px 22px 22px;width:100%;max-width:340px;
+  box-shadow:0 24px 64px rgba(0,0,0,.25);transform:scale(.88) translateY(20px);opacity:0;
+  transition:transform .35s cubic-bezier(.22,1,.36,1),opacity .3s;text-align:center;
+}
+.detail-overlay.show .detail-modal{transform:scale(1) translateY(0);opacity:1}
+.detail-kana{
+  font-size:clamp(90px,28vw,140px);font-weight:500;line-height:1.1;margin:8px 0 6px;
+  color:var(--text);
+}
+.detail-roma{font-size:22px;font-weight:700;color:var(--accent);letter-spacing:2px;margin-bottom:14px;text-transform:uppercase}
+.detail-info{
+  background:#f0f7ff;border-radius:14px;padding:12px 14px;margin-bottom:14px;text-align:left;font-size:13px;line-height:1.5;color:var(--text);
+}
+.detail-info strong{color:var(--accent)}
+.detail-close{
+  width:100%;padding:13px;font-size:15px;font-weight:600;border:none;border-radius:12px;
+  background:#e8e8ed;color:var(--text);cursor:pointer;font-family:inherit;
+}
+.detail-close:active{transform:scale(.97)}
+.stroke-svg-wrap{
+  width:100%;aspect-ratio:1;max-height:220px;margin:10px 0 12px;
+  background:linear-gradient(145deg,#f0f4f8 0%,#e8eef5 100%);
+  border-radius:16px;border:1.5px solid #d8e0ea;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.04);
+}
+.stroke-svg-wrap svg{width:90%;height:90%;display:block}
+.stroke-replay{
+  width:100%;padding:11px;font-size:14px;font-weight:600;border:none;border-radius:12px;
+  background:var(--sel);color:var(--accent);cursor:pointer;font-family:inherit;margin-bottom:12px;
+  border:1.5px solid #c8dffc;
+}
+.stroke-replay:active{transform:scale(.97)}
+.stroke-loading{font-size:13px;color:var(--text2);padding:20px;text-align:center;line-height:1.4}
+.level-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:6px}
+.level-card{
+  border:none;border-radius:18px;padding:18px 14px;cursor:pointer;font-family:inherit;
+  text-align:left;color:#fff;position:relative;overflow:hidden;
+  box-shadow:0 6px 20px rgba(0,0,0,.12);transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;
+  animation:levelIn .45s cubic-bezier(.22,1,.36,1) both;
+}
+.level-card:active{transform:scale(.96)}
+.level-card:nth-child(1){animation-delay:.05s;background:linear-gradient(135deg,#34c759,#30d158)}
+.level-card:nth-child(2){animation-delay:.1s;background:linear-gradient(135deg,#0071e3,#00c7be)}
+.level-card:nth-child(3){animation-delay:.15s;background:linear-gradient(135deg,#af52de,#bf5af2)}
+.level-card:nth-child(4){animation-delay:.2s;background:linear-gradient(135deg,#ff9500,#ff9f0a)}
+.level-card:nth-child(5){animation-delay:.25s;background:linear-gradient(135deg,#ff3b30,#ff453a);grid-column:1/-1}
+@keyframes levelIn{from{opacity:0;transform:translateY(16px) scale(.94)}to{opacity:1;transform:none}}
+.level-card .lv{font-size:22px;font-weight:800;letter-spacing:-.5px;margin-bottom:2px}
+.level-card .lv-desc{font-size:12px;opacity:.9;font-weight:500}
+.level-card .lv-count{font-size:11px;opacity:.75;margin-top:6px}
+.level-badge{
+  display:inline-block;padding:6px 14px;border-radius:100px;font-size:14px;font-weight:700;
+  color:#fff;background:linear-gradient(135deg,#34c759,#30d158);margin-bottom:4px;
+}
+.kotoba-cats{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+.kotoba-cat{
+  padding:12px 16px;font-size:13px;font-weight:600;border:1.5px solid #e5e5ea;
+  border-radius:14px;background:linear-gradient(160deg,#fff,#f7f8fc);color:var(--text2);cursor:pointer;font-family:inherit;
+  transition:all .2s cubic-bezier(.34,1.56,.64,1);box-shadow:0 2px 8px rgba(0,0,0,.04);
+}
+.kotoba-cat.active{border-color:var(--accent);background:linear-gradient(160deg,#e8f2ff,#dceaff);color:var(--accent);transform:scale(1.04);box-shadow:0 4px 14px rgba(0,113,227,.18)}
+.kotoba-cat:active{transform:scale(.96)}
+.kotoba-display{
+  font-size:clamp(40px,11vw,56px);font-weight:600;text-align:center;min-height:78px;
+  display:flex;align-items:center;justify-content:center;margin:10px 0 6px;
+  background:linear-gradient(160deg,#f5f7fb 0%,#e8eef8 100%);
+  border-radius:18px;padding:16px 14px;border:1.5px solid #e8eaf0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 4px 16px rgba(0,0,0,.04);
+  letter-spacing:1px;line-height:1.3;
+  transition:opacity .3s,transform .3s cubic-bezier(.22,1,.36,1);
+}
+.kotoba-display.fade-out{opacity:0;transform:scale(.94) translateY(6px)}
+.kotoba-display.fade-in{opacity:1;transform:scale(1) translateY(0)}
+.kotoba-reading{
+  text-align:center;font-size:16px;color:var(--text2);font-weight:500;margin-bottom:10px;letter-spacing:1px;
+}
+.level-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:8px}
+.level-btn{
+  padding:20px 8px;border:1.5px solid #e5e5ea;border-radius:18px;
+  background:linear-gradient(160deg,#fff 0%,#f7f8fc 100%);
+  font-family:inherit;cursor:pointer;transition:all .25s cubic-bezier(.34,1.56,.64,1);text-align:center;
+  box-shadow:0 2px 10px rgba(0,0,0,.04);
+}
+.level-btn:active{transform:scale(.94)}
+.level-btn .lv{font-size:24px;font-weight:800;color:var(--text);display:block;letter-spacing:.5px}
+.level-btn .lv-sub{font-size:11px;color:var(--text2);margin-top:5px;display:block;font-weight:500}
+.level-btn.active{border-color:var(--accent);background:linear-gradient(160deg,#e8f2ff,#d6e8ff);box-shadow:0 6px 20px rgba(0,113,227,.2);transform:scale(1.03)}
+.level-btn.active .lv{color:var(--accent)}
+.level-btn:nth-child(1) .lv{color:#34c759}
+.level-btn:nth-child(2) .lv{color:#0071e3}
+.level-btn:nth-child(3) .lv{color:#af52de}
+.level-btn:nth-child(4) .lv{color:#ff9500}
+.level-btn:nth-child(5) .lv{color:#ff2d55}
+.level-badge{
+  display:inline-block;background:linear-gradient(135deg,#0071e3,#5856d6);color:#fff;font-weight:700;font-size:14px;
+  padding:7px 16px;border-radius:100px;box-shadow:0 4px 12px rgba(0,113,227,.3);
+}
+#kStepLevel,#kStepOpt{transition:opacity .3s,transform .3s}
+.k-step-hide{opacity:0;transform:translateY(12px);pointer-events:none}
+.k-step-show{opacity:1;transform:translateY(0)}
+.progress-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.progress-bar{flex:1;height:6px;background:#e8e8ed;border-radius:100px;overflow:hidden}
+.progress-fill{height:100%;background:var(--accent);border-radius:100px;width:0%;transition:width .35s ease}
+.progress-text{font-size:12px;font-weight:600;color:var(--text2);min-width:52px;text-align:right;font-variant-numeric:tabular-nums}
+.result-card{text-align:center;padding:32px 20px !important}
+.result-emoji{font-size:56px;margin-bottom:8px}
+.result-title{font-size:22px;font-weight:700;letter-spacing:1px;margin-bottom:4px}
+.result-sub{font-size:15px;color:var(--text2);margin-bottom:18px}
+.result-score{font-size:42px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums;margin-bottom:6px}
+.result-detail{font-size:14px;color:var(--text2)}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">カ JapanGo</div>
+    <button class="score-badge" id="scoreBadge">Skor <span class="score-value" id="scoreValue">0</span>/7500</button>
+  </div>
+
+  <div class="screen active show" id="screenHome">
+    <div class="home-hero">
+      <div class="big">ジャパンゴ</div>
+      <div class="sub">Belajar Jepang · Hiragana · Katakana · Kotoba</div>
+    </div>
+    <div class="game-list">
+      <button class="game-card" id="goKotoba">
+        <div class="game-icon" style="background:linear-gradient(145deg,#fff0f5,#ffd6e7)">📚</div>
+        <div class="game-info"><h3>Kotoba</h3><p>Kosakata JLPT · benda, kerja, sifat</p></div>
+        <span class="game-arrow">›</span>
+      </button>
+      <button class="game-card" id="goKamus">
+        <div class="game-icon" style="background:linear-gradient(145deg,#e8f8f0,#c8f0d8)">🧩</div>
+        <div class="game-info"><h3>Huruf</h3><p>Lihat hiragana, katakana & urutan goresan</p></div>
+        <span class="game-arrow">›</span>
+      </button>
+      <button class="game-card" id="goLatihan">
+        <div class="game-icon blue">⌨️</div>
+        <div class="game-info"><h3>Ketik</h3><p>Latihan baca & tulis kana ↔ romaji</p></div>
+        <span class="game-arrow">›</span>
+      </button>
+      <button class="game-card" id="goSusun">
+        <div class="game-icon purple">👾</div>
+        <div class="game-info"><h3>Susun</h3><p>Susun huruf acak ke urutan yang benar</p></div>
+        <span class="game-arrow">›</span>
+      </button>
+      <button class="game-card" id="goLukis">
+        <div class="game-icon" style="background:linear-gradient(145deg,#fff3e0,#ffe0b2)">✍️</div>
+        <div class="game-info"><h3>Lukis</h3><p>Latihan menulis huruf dengan jari</p></div>
+        <span class="game-arrow">›</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="screen" id="screenLatihanSetup">
+    <div class="card">
+      <div class="card-top">
+        <div class="section-title">Ketik · Pengaturan</div>
+        <button class="home-btn" data-go="screenHome">⌂</button>
+      </div>
+      <div class="section-title">Mode Soal</div>
+      <div class="tabs">
+        <button class="tab active" data-mode="kana2roma">Kana → Romaji</button>
+        <button class="tab" data-mode="roma2kana">Romaji → Kana</button>
+      </div>
+      <div class="section-title">Jenis Huruf</div>
+      <div class="script-row">
+        <button class="script-btn active" data-script="hiragana">Hiragana</button>
+        <button class="script-btn" data-script="katakana">Katakana</button>
+        <button class="script-btn" data-script="mix">Campur</button>
+      </div>
+      <div class="section-title">Jumlah Huruf per Soal</div>
+      <div class="jumlah-row">
+        <div class="jumlah-control">
+          <button class="jumlah-btn" id="jMin">−</button>
+          <span class="jumlah-value" id="jVal">3</span>
+          <button class="jumlah-btn" id="jPlus">+</button>
+        </div>
+      </div>
+      <div class="section-title">Pilih Huruf</div>
+      <div class="sel-controls">
+        <button class="sel-btn accent" id="btnAll">Pilih Semua</button>
+        <button class="sel-btn" id="btnNone">Hapus</button>
+        <button class="sel-btn" id="btnRandom">Acak</button>
+      </div>
+      <div class="kana-grid" id="gridL"></div>
+      <div class="selected-count" id="cntL">0 huruf dipilih</div>
+      <button class="start-btn" id="startL" disabled>Mulai Latihan</button>
+    </div>
+  </div>
+
+  <div class="screen" id="screenLatihanPlay">
+    <div class="card" id="cardL">
+      <div class="particles" id="partL"></div>
+      <div class="card-top">
+        <div class="section-title" id="labelL">Baca huruf ini</div>
+        <button class="home-btn" data-go="screenHome">⌂</button>
+      </div>
+      <div class="display-kana fade-in" id="dispKana"></div>
+      <div class="display-roma" id="dispRoma" style="display:none"></div>
+      <label class="input-label" id="labelIn" for="ans">Ketik jawaban</label>
+      <input type="text" id="ans" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <div class="btn-row">
+        <button class="main btn-secondary" id="btnNew">Soal Baru</button>
+        <button class="main btn-primary" id="btnCheck">Cek Jawaban</button>
+      </div>
+      <div class="feedback" id="fbL">
+        <div class="feedback-icon" id="fbIconL"></div>
+        <div class="feedback-text" id="fbTextL"></div>
+        <div class="feedback-detail" id="fbDetL"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="screenSusunSetup">
+    <div class="card">
+      <div class="card-top">
+        <div class="section-title">Susun · Pengaturan</div>
+        <button class="home-btn" data-go="screenHome">⌂</button>
+      </div>
+      <div class="section-title">Jenis Huruf</div>
+      <div class="script-row">
+        <button class="script-btn active" data-script-s="hiragana">Hiragana</button>
+        <button class="script-btn" data-script-s="katakana">Katakana</button>
+        <button class="script-btn" data-script-s="mix">Campur</button>
+      </div>
+      <div class="section-title">Jumlah Huruf</div>
+      <div class="jumlah-row">
+        <div class="jumlah-control">
+          <button class="jumlah-btn" id="jMinS">−</button>
+          <span class="jumlah-value" id="jValS">4</span>
+          <button class="jumlah-btn" id="jPlusS">+</button>
+        </div>
+      </div>
+      <div class="section-title">Pilih Huruf</div>
+      <div class="sel-controls">
+        <button class="sel-btn accent" id="btnAllS">Pilih Semua</button>
+        <button class="sel-btn" id="btnNoneS">Hapus</button>
+        <button class="sel-btn" id="btnRandomS">Acak</button>
+      </div>
+      <div class="kana-grid" id="gridS"></div>
+      <div class="selected-count" id="cntS">0 huruf dipilih</div>
+      <button class="start-btn" id="startS" disabled>Mulai Susun</button>
+    </div>
+  </div>
+
+  <div class="screen" id="screenSusunPlay">
+    <div class="card" id="cardS">
+      <div class="particles" id="partS"></div>
+      <div class="card-top">
+        <div class="section-title">Susun huruf ini</div>
+        <button class="home-btn" data-go="screenHome">⌂</button>
+      </div>
+      <div class="romaji-hint" id="hintS"></div>
+      <div class="slots" id="slots"></div>
+      <div class="pool" id="pool"></div>
+      <div class="btn-row">
+        <button class="main btn-secondary" id="btnResetS">Ulangi</button>
+        <button class="main btn-primary" id="btnNewS">Soal Baru</button>
+      </div>
+      <div class="feedback" id="fbS">
+        <div class="feedback-icon" id="fbIconS"></div>
+        <div class="feedback-text" id="fbTextS"></div>
+        <div class="feedback-detail" id="fbDetS"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="screenLukisSetup">
+    <div class="card">
+      <div class="card-top">
+        <div class="section-title">Lukis · Pengaturan</div>
+        <button class="home-btn" data-go="screenHome">⌂</button>
+      </div>
+      <div class="section-title">Jenis Huruf</div>
+      <div class="script-row">
+        <button class="script-btn active" data-script-d="hiragana">Hiragana</button>
+        <button class="script-btn" data-script-d="katakana">Katakana</button>
+        <button class="script-btn" data-script-d="mix">Campur</button>
+      </div>
+      <div class="section-title">Pilih Huruf</div>
+      <div class="sel-controls">
+        <button class="sel-btn accent" id="btnAllD">Pilih Semua</button>
+        <button class="sel-btn" id="btnNoneD">Hapus</button>
+        <button class="sel-btn" id="btnRandomD">Acak</button>
+      </div>
+      <div class="kana-grid" id="gridD"></div>
+      <div class="selected-count" id="cntD">0 huruf dipilih</div>
+      <button class="start-btn" id="startD" disabled>Mulai Lukis</button>
+    </div>
+  </div>
+
+  <div class="screen" id="screenLukisPlay">
+    <div class="card" id="cardD">
+      <div class="card-top">
+        <div class="section-title">Lukis huruf ini</div>
+        <button class="home-btn" data-go="screenHome">⌂</button>
+      </div>
+      <div class="draw-hint" id="hintD">A</div>
+      <div class="draw-area" id="drawArea">
+        <div class="draw-ref" id="drawRef">あ</div>
+        <canvas id="drawCanvas"></canvas>
+      </div>
+      <div class="draw-controls">
+        <button class="draw-btn ghost active" id="btnShowRef">Huruf Ditampilkan</button>
+        <button class="draw-btn warn" id="btnClearD">Reset Papan</button>
+      </div>
+      <div class="btn-row">
+        <button class="main btn-primary" id="btnNewD" style="flex:1">Soal Baru</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="screenKamus">
+    <div class="card">
+      <div class="card-top">
+        <div class="section-title">Huruf · Goresan</div>
+        <button class="home-btn" data-go="screenHome">⌂</button>
+      </div>
+      <div class="switch-row">
+        <button class="switch-btn active" id="swHira">Hiragana</button>
+        <button class="switch-btn" id="swKata">Katakana</button>
+      </div>
+      <div class="section-title" style="margin-bottom:8px">Ketuk huruf untuk lihat urutan</div>
+      <div class="kana-grid" id="gridK" style="max-height:420px"></div>
+    </div>
+  </div>
+
+  <div class="screen" id="screenKotobaSetup">
+    <div class="card">
+      <div class="card-top">
+        <div class="section-title">Kotoba · Kosakata</div>
+        <button class="home-btn" data-go="screenHome">⌂</button>
+      </div>
+
+      <div id="kStepLevel">
+        <div class="section-title">Pilih Level JLPT</div>
+        <div class="level-grid" id="levelGrid"></div>
+      </div>
+
+      <div id="kStepOpt" style="display:none">
+        <div class="level-badge" id="levelBadge">N5</div>
+        <div class="section-title" style="margin-top:12px">Pilih Jenis Kata</div>
+        <div class="kotoba-cats" id="kotobaCats"></div>
+        <div class="section-title" style="margin-top:14px">Mode Latihan</div>
+        <div class="tabs" id="kotobaModes">
+          <button class="tab active" data-kmode="jp2arti">Jepang → Arti</button>
+          <button class="tab" data-kmode="arti2jp">Arti → Jepang</button>
+          <button class="tab" data-kmode="baca">Baca (Romaji)</button>
+        </div>
+        <div class="section-title" style="margin-top:14px">Jumlah Soal</div>
+        <div class="tabs" id="kotobaCount">
+          <button class="tab active" data-kcount="10">10</button>
+          <button class="tab" data-kcount="20">20</button>
+          <button class="tab" data-kcount="30">30</button>
+          <button class="tab" data-kcount="0">Unlimited</button>
+        </div>
+        <div class="btn-row" style="margin-top:14px">
+          <button class="main btn-secondary" id="btnBackLevel">‹ Level</button>
+          <button class="main btn-primary" id="startKotoba" disabled style="flex:1.5">Mulai</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="screenKotobaPlay">
+    <div class="card" id="cardK">
+      <div class="particles" id="partK"></div>
+      <div class="card-top">
+        <div class="section-title" id="labelK">Apa artinya?</div>
+        <button class="home-btn" data-go="screenHome">⌂</button>
+      </div>
+      <div class="progress-row" id="progressRow">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-text" id="progressText">1 / 10</div>
+      </div>
+      <div class="kotoba-display fade-in" id="kotobaDisp"></div>
+      <div class="kotoba-reading" id="kotobaRead" style="display:none"></div>
+      <label class="input-label" id="labelInK" for="ansK">Ketik jawaban</label>
+      <input type="text" id="ansK" placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <div class="btn-row">
+        <button class="main btn-secondary" id="btnNewK">Lewati</button>
+        <button class="main btn-primary" id="btnCheckK">Cek Jawaban</button>
+      </div>
+      <div class="feedback" id="fbK">
+        <div class="feedback-icon" id="fbIconK"></div>
+        <div class="feedback-text" id="fbTextK"></div>
+        <div class="feedback-detail" id="fbDetK"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="screenKotobaResult">
+    <div class="card result-card">
+      <div class="result-emoji">🎉</div>
+      <div class="result-title">おめでとうございます！</div>
+      <div class="result-sub">Omedetou!</div>
+      <div class="result-score" id="resultScore">8 / 10</div>
+      <div class="result-detail" id="resultDetail">Benar 8 dari 10 soal</div>
+      <div class="btn-row" style="margin-top:18px">
+        <button class="main btn-secondary" id="btnResultHome">Beranda</button>
+        <button class="main btn-primary" id="btnResultAgain">Latihan Lagi</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="detail-overlay" id="detailOverlay">
+  <div class="detail-modal">
+    <div class="detail-kana" id="detailKana">あ</div>
+    <div class="detail-roma" id="detailRoma">A</div>
+    <div class="stroke-svg-wrap" id="strokeSvgWrap">
+      <div class="stroke-loading" id="strokeLoading">Memuat urutan goresan…</div>
+    </div>
+    <button class="stroke-replay" id="strokeReplay" style="display:none">▶ Putar Ulang</button>
+    <div class="detail-info" id="detailInfo"></div>
+    <button class="detail-close" id="detailClose">Tutup</button>
+  </div>
+</div>
+
+<div class="overlay" id="resetOverlay">
+  <div class="modal">
+    <div class="modal-title">Reset Skor?</div>
+    <div class="modal-desc">Skor akan kembali ke 0.</div>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" id="btnCancelR">Batal</button>
+      <button class="modal-btn danger" id="btnOkR">Reset</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const H=[
+{k:"あ",r:"a"},{k:"い",r:"i"},{k:"う",r:"u"},{k:"え",r:"e"},{k:"お",r:"o"},
+{k:"か",r:"ka"},{k:"き",r:"ki"},{k:"く",r:"ku"},{k:"け",r:"ke"},{k:"こ",r:"ko"},
+{k:"さ",r:"sa"},{k:"し",r:"shi"},{k:"す",r:"su"},{k:"せ",r:"se"},{k:"そ",r:"so"},
+{k:"た",r:"ta"},{k:"ち",r:"chi"},{k:"つ",r:"tsu"},{k:"て",r:"te"},{k:"と",r:"to"},
+{k:"な",r:"na"},{k:"に",r:"ni"},{k:"ぬ",r:"nu"},{k:"ね",r:"ne"},{k:"の",r:"no"},
+{k:"は",r:"ha"},{k:"ひ",r:"hi"},{k:"ふ",r:"fu"},{k:"へ",r:"he"},{k:"ほ",r:"ho"},
+{k:"ま",r:"ma"},{k:"み",r:"mi"},{k:"む",r:"mu"},{k:"め",r:"me"},{k:"も",r:"mo"},
+{k:"や",r:"ya"},{k:"ゆ",r:"yu"},{k:"よ",r:"yo"},
+{k:"ら",r:"ra"},{k:"り",r:"ri"},{k:"る",r:"ru"},{k:"れ",r:"re"},{k:"ろ",r:"ro"},
+{k:"わ",r:"wa"},{k:"を",r:"wo"},{k:"ん",r:"n"},
+{k:"が",r:"ga"},{k:"ぎ",r:"gi"},{k:"ぐ",r:"gu"},{k:"げ",r:"ge"},{k:"ご",r:"go"},
+{k:"ざ",r:"za"},{k:"じ",r:"ji"},{k:"ず",r:"zu"},{k:"ぜ",r:"ze"},{k:"ぞ",r:"zo"},
+{k:"だ",r:"da"},{k:"ぢ",r:"ji"},{k:"づ",r:"zu"},{k:"で",r:"de"},{k:"ど",r:"do"},
+{k:"ば",r:"ba"},{k:"び",r:"bi"},{k:"ぶ",r:"bu"},{k:"べ",r:"be"},{k:"ぼ",r:"bo"},
+{k:"ぱ",r:"pa"},{k:"ぴ",r:"pi"},{k:"ぷ",r:"pu"},{k:"ぺ",r:"pe"},{k:"ぽ",r:"po"},
+{k:"きゃ",r:"kya"},{k:"きゅ",r:"kyu"},{k:"きょ",r:"kyo"},
+{k:"しゃ",r:"sha"},{k:"しゅ",r:"shu"},{k:"しょ",r:"sho"},
+{k:"ちゃ",r:"cha"},{k:"ちゅ",r:"chu"},{k:"ちょ",r:"cho"},
+{k:"にゃ",r:"nya"},{k:"にゅ",r:"nyu"},{k:"にょ",r:"nyo"},
+{k:"ひゃ",r:"hya"},{k:"ひゅ",r:"hyu"},{k:"ひょ",r:"hyo"},
+{k:"みゃ",r:"mya"},{k:"みゅ",r:"myu"},{k:"みょ",r:"myo"},
+{k:"りゃ",r:"rya"},{k:"りゅ",r:"ryu"},{k:"りょ",r:"ryo"},
+{k:"ぎゃ",r:"gya"},{k:"ぎゅ",r:"gyu"},{k:"ぎょ",r:"gyo"},
+{k:"じゃ",r:"ja"},{k:"じゅ",r:"ju"},{k:"じょ",r:"jo"},
+{k:"びゃ",r:"bya"},{k:"びゅ",r:"byu"},{k:"びょ",r:"byo"},
+{k:"ぴゃ",r:"pya"},{k:"ぴゅ",r:"pyu"},{k:"ぴょ",r:"pyo"}
+];
+const K=[
+{k:"ア",r:"a"},{k:"イ",r:"i"},{k:"ウ",r:"u"},{k:"エ",r:"e"},{k:"オ",r:"o"},
+{k:"カ",r:"ka"},{k:"キ",r:"ki"},{k:"ク",r:"ku"},{k:"ケ",r:"ke"},{k:"コ",r:"ko"},
+{k:"サ",r:"sa"},{k:"シ",r:"shi"},{k:"ス",r:"su"},{k:"セ",r:"se"},{k:"ソ",r:"so"},
+{k:"タ",r:"ta"},{k:"チ",r:"chi"},{k:"ツ",r:"tsu"},{k:"テ",r:"te"},{k:"ト",r:"to"},
+{k:"ナ",r:"na"},{k:"ニ",r:"ni"},{k:"ヌ",r:"nu"},{k:"ネ",r:"ne"},{k:"ノ",r:"no"},
+{k:"ハ",r:"ha"},{k:"ヒ",r:"hi"},{k:"フ",r:"fu"},{k:"ヘ",r:"he"},{k:"ホ",r:"ho"},
+{k:"マ",r:"ma"},{k:"ミ",r:"mi"},{k:"ム",r:"mu"},{k:"メ",r:"me"},{k:"モ",r:"mo"},
+{k:"ヤ",r:"ya"},{k:"ユ",r:"yu"},{k:"ヨ",r:"yo"},
+{k:"ラ",r:"ra"},{k:"リ",r:"ri"},{k:"ル",r:"ru"},{k:"レ",r:"re"},{k:"ロ",r:"ro"},
+{k:"ワ",r:"wa"},{k:"ヲ",r:"wo"},{k:"ン",r:"n"},
+{k:"ガ",r:"ga"},{k:"ギ",r:"gi"},{k:"グ",r:"gu"},{k:"ゲ",r:"ge"},{k:"ゴ",r:"go"},
+{k:"ザ",r:"za"},{k:"ジ",r:"ji"},{k:"ズ",r:"zu"},{k:"ゼ",r:"ze"},{k:"ゾ",r:"zo"},
+{k:"ダ",r:"da"},{k:"ヂ",r:"ji"},{k:"ヅ",r:"zu"},{k:"デ",r:"de"},{k:"ド",r:"do"},
+{k:"バ",r:"ba"},{k:"ビ",r:"bi"},{k:"ブ",r:"bu"},{k:"ベ",r:"be"},{k:"ボ",r:"bo"},
+{k:"パ",r:"pa"},{k:"ピ",r:"pi"},{k:"プ",r:"pu"},{k:"ペ",r:"pe"},{k:"ポ",r:"po"},
+{k:"キャ",r:"kya"},{k:"キュ",r:"kyu"},{k:"キョ",r:"kyo"},
+{k:"シャ",r:"sha"},{k:"シュ",r:"shu"},{k:"ショ",r:"sho"},
+{k:"チャ",r:"cha"},{k:"チュ",r:"chu"},{k:"チョ",r:"cho"},
+{k:"ニャ",r:"nya"},{k:"ニュ",r:"nyu"},{k:"ニョ",r:"nyo"},
+{k:"ヒャ",r:"hya"},{k:"ヒュ",r:"hyu"},{k:"ヒョ",r:"hyo"},
+{k:"ミャ",r:"mya"},{k:"ミュ",r:"myu"},{k:"ミョ",r:"myo"},
+{k:"リャ",r:"rya"},{k:"リュ",r:"ryu"},{k:"リョ",r:"ryo"},
+{k:"ギャ",r:"gya"},{k:"ギュ",r:"gyu"},{k:"ギョ",r:"gyo"},
+{k:"ジャ",r:"ja"},{k:"ジュ",r:"ju"},{k:"ジョ",r:"jo"},
+{k:"ビャ",r:"bya"},{k:"ビュ",r:"byu"},{k:"ビョ",r:"byo"},
+{k:"ピャ",r:"pya"},{k:"ピュ",r:"pyu"},{k:"ピョ",r:"pyo"}
+];
+
+let score=0,mode="kana2roma",script="hiragana",scriptS="hiragana",scriptD="hiragana";
+let jumlah=3,jumlahS=4;
+let sel=new Set(),selS=new Set(),selD=new Set();
+let curQ=null,answered=false;
+let target=[],filled=[],done=false,busy=false;
+let curDraw=null, showRef=true;
+let drawing=false, lastX=0, lastY=0;
+const $=id=>document.getElementById(id);
+
+let currentScreen="screenHome";
+function goTo(id){
+  if(id===currentScreen) return;
+  const prev=$(currentScreen);
+  const next=$(id);
+  prev.classList.add("hide");
+  prev.classList.remove("show");
+  setTimeout(()=>{
+    prev.classList.remove("active","hide");
+    next.classList.add("active");
+    requestAnimationFrame(()=>{ requestAnimationFrame(()=> next.classList.add("show")); });
+    currentScreen=id;
+  },280);
+}
+
+$("goLatihan").onclick=()=>{ renderGrid("gridL",sel,script,false); goTo("screenLatihanSetup"); };
+$("goSusun").onclick=()=>{ renderGrid("gridS",selS,scriptS,true); goTo("screenSusunSetup"); };
+$("goLukis").onclick=()=>{ renderGrid("gridD",selD,scriptD,false); goTo("screenLukisSetup"); };
+$("goKamus").onclick=()=>{ renderKamus(); goTo("screenKamus"); };
+document.querySelectorAll("[data-go]").forEach(b=>{ b.onclick=()=> goTo(b.dataset.go); });
+
+$("scoreBadge").onclick=()=> $("resetOverlay").classList.add("show");
+$("btnCancelR").onclick=()=> $("resetOverlay").classList.remove("show");
+$("btnOkR").onclick=()=>{ score=0; $("scoreValue").textContent="0"; $("resetOverlay").classList.remove("show"); };
+$("resetOverlay").onclick=e=>{ if(e.target===$("resetOverlay")) $("resetOverlay").classList.remove("show"); };
+
+function addScore(n){
+  const p=score; score=Math.min(7500,score+n);
+  $("scoreValue").textContent=score;
+  if(score>p){ $("scoreBadge").classList.add("pulse"); setTimeout(()=>$("scoreBadge").classList.remove("pulse"),380); }
+}
+
+function renderGrid(gridId, set, scr, isS){
+  const grid=$(gridId); grid.innerHTML=""; set.clear();
+  let cntId="cntL", startId="startL";
+  if(gridId==="gridS"){ cntId="cntS"; startId="startS"; }
+  else if(gridId==="gridD"){ cntId="cntD"; startId="startD"; }
+  const cnt=$(cntId);
+  const start=$(startId);
+  const upd=()=>{ cnt.textContent=set.size+" huruf dipilih"; start.disabled=set.size===0; };
+  function add(item,idx,src){
+    const b=document.createElement("button");
+    b.className="kana-btn"; b.dataset.idx=idx; b.dataset.src=src;
+    b.innerHTML=item.k+"<small>"+item.r+"</small>";
+    b.onclick=()=>{
+      const key=src+idx;
+      if(set.has(key)){ set.delete(key); b.classList.remove("selected"); }
+      else{ set.add(key); b.classList.add("selected"); }
+      upd();
+    };
+    grid.appendChild(b);
+  }
+  if(scr==="mix"){
+    const lh=document.createElement("div"); lh.className="row-label"; lh.textContent="HIRAGANA"; grid.appendChild(lh);
+    H.forEach((it,i)=>add(it,i,"h"));
+    const lk=document.createElement("div"); lk.className="row-label"; lk.textContent="KATAKANA"; grid.appendChild(lk);
+    K.forEach((it,i)=>add(it,i,"k"));
+  } else {
+    const ch=scr==="katakana"?K:H;
+    const gs=[
+      {l:"A",s:0,e:5},{l:"K",s:5,e:10},{l:"S",s:10,e:15},{l:"T",s:15,e:20},{l:"N",s:20,e:25},
+      {l:"H",s:25,e:30},{l:"M",s:30,e:35},{l:"Y",s:35,e:38},{l:"R",s:38,e:43},{l:"W N",s:43,e:46},
+      {l:"G Z D B",s:46,e:66},{l:"P",s:66,e:71},
+      {l:"Yōon (Kombinasi)",s:71,e:120}
+    ];
+    gs.forEach(g=>{
+      if(g.s>=ch.length) return;
+      const lab=document.createElement("div"); lab.className="row-label"; lab.textContent=g.l; grid.appendChild(lab);
+      for(let i=g.s;i<Math.min(g.e,ch.length);i++) add(ch[i],i,"s");
+    });
+  }
+  upd();
+}
+
+function getItems(set,scr){
+  const out=[];
+  set.forEach(key=>{
+    const src=key[0], idx=parseInt(key.slice(1));
+    if(src==="h") out.push(H[idx]);
+    else if(src==="k") out.push(K[idx]);
+    else out.push((scr==="katakana"?K:H)[idx]);
+  });
+  return out;
+}
+
+document.querySelectorAll("[data-mode]").forEach(t=>{
+  t.onclick=()=>{ document.querySelectorAll("[data-mode]").forEach(x=>x.classList.remove("active")); t.classList.add("active"); mode=t.dataset.mode; };
+});
+document.querySelectorAll("[data-script]").forEach(b=>{
+  b.onclick=()=>{ document.querySelectorAll("[data-script]").forEach(x=>x.classList.remove("active")); b.classList.add("active"); script=b.dataset.script; renderGrid("gridL",sel,script,false); };
+});
+$("jMin").onclick=()=>{ if(jumlah>1){jumlah--;$("jVal").textContent=jumlah;} };
+$("jPlus").onclick=()=>{ if(jumlah<8){jumlah++;$("jVal").textContent=jumlah;} };
+
+function bindSel(allId,noneId,randId,gridId,set,cntId,startId){
+  $(allId).onclick=()=>{
+    set.clear();
+    document.querySelectorAll("#"+gridId+" .kana-btn").forEach(b=>{ set.add(b.dataset.src+b.dataset.idx); b.classList.add("selected"); });
+    $(cntId).textContent=set.size+" huruf dipilih"; $(startId).disabled=set.size===0;
+  };
+  $(noneId).onclick=()=>{
+    set.clear();
+    document.querySelectorAll("#"+gridId+" .kana-btn").forEach(b=>b.classList.remove("selected"));
+    $(cntId).textContent="0 huruf dipilih"; $(startId).disabled=true;
+  };
+  $(randId).onclick=()=>{
+    set.clear();
+    document.querySelectorAll("#"+gridId+" .kana-btn").forEach(b=>b.classList.remove("selected"));
+    const all=[...document.querySelectorAll("#"+gridId+" .kana-btn")];
+    const n=Math.max(5,Math.floor(all.length*(.3+Math.random()*.3)));
+    all.sort(()=>Math.random()-.5).slice(0,n).forEach(b=>{ set.add(b.dataset.src+b.dataset.idx); b.classList.add("selected"); });
+    $(cntId).textContent=set.size+" huruf dipilih"; $(startId).disabled=set.size===0;
+  };
+}
+bindSel("btnAll","btnNone","btnRandom","gridL",sel,"cntL","startL");
+bindSel("btnAllS","btnNoneS","btnRandomS","gridS",selS,"cntS","startS");
+bindSel("btnAllD","btnNoneD","btnRandomD","gridD",selD,"cntD","startD");
+
+document.querySelectorAll("[data-script-s]").forEach(b=>{
+  b.onclick=()=>{ document.querySelectorAll("[data-script-s]").forEach(x=>x.classList.remove("active")); b.classList.add("active"); scriptS=b.dataset.scriptS; renderGrid("gridS",selS,scriptS,true); };
+});
+document.querySelectorAll("[data-script-d]").forEach(b=>{
+  b.onclick=()=>{ document.querySelectorAll("[data-script-d]").forEach(x=>x.classList.remove("active")); b.classList.add("active"); scriptD=b.dataset.scriptD; renderGrid("gridD",selD,scriptD,false); };
+});
+$("jMinS").onclick=()=>{ if(jumlahS>2){jumlahS--;$("jValS").textContent=jumlahS;} };
+$("jPlusS").onclick=()=>{ if(jumlahS<8){jumlahS++;$("jValS").textContent=jumlahS;} };
+
+function makeQ(set,scr,n){
+  const pool=getItems(set,scr); if(!pool.length) return null;
+  const num=Math.min(n,pool.length); const picks=[]; const used=new Set();
+  while(picks.length<num){
+    const it=pool[Math.floor(Math.random()*pool.length)];
+    if(pool.length>=num && used.has(it.k)) continue;
+    picks.push(it); used.add(it.k);
+  }
+  return picks;
+}
+
+function showQ(){
+  answered=false; curQ=makeQ(sel,script,jumlah); if(!curQ) return;
+  const ans=$("ans"); ans.value=""; ans.disabled=false;
+  $("fbL").classList.remove("show","success","error");
+  const ks=curQ.map(x=>x.k).join("");
+  const rs=curQ.map(x=>x.r).join(" ");
+  $("dispKana").classList.remove("fade-in"); $("dispKana").classList.add("fade-out");
+  setTimeout(()=>{
+    if(mode==="kana2roma"){
+      $("labelL").textContent="Baca huruf ini";
+      $("dispKana").textContent=ks; $("dispKana").style.display="flex"; $("dispRoma").style.display="none";
+      $("labelIn").textContent="Ketik romaji"; ans.placeholder="contoh: JI DA N";
+    } else {
+      $("labelL").textContent="Tulis huruf Jepang";
+      $("dispKana").style.display="none"; $("dispRoma").style.display="block"; $("dispRoma").textContent=rs.toUpperCase();
+      $("labelIn").textContent="Ketik hurufnya"; ans.placeholder="contoh: あいう";
+    }
+    $("dispKana").classList.remove("fade-out"); $("dispKana").classList.add("fade-in");
+    ans.focus();
+  },250);
+}
+
+function checkL(){
+  if(answered||!curQ) return;
+  const raw=$("ans").value.trim(); if(!raw){ $("ans").focus(); return; }
+  answered=true; $("ans").disabled=true;
+  let ok=false, det="";
+  if(mode==="kana2roma"){
+    const exp=curQ.map(x=>x.r).join("");
+    const u=raw.toLowerCase().replace(/\s+/g,"");
+    ok=u===exp;
+    let m=0; for(let i=0;i<Math.min(u.length,exp.length);i++) if(u[i]===exp[i]) m++;
+    det=ok?"Semua tepat · +10":"Benar "+m+"/"+exp.length+" · "+curQ.map(x=>x.r).join(" ");
+  } else {
+    const exp=curQ.map(x=>x.k).join("");
+    const u=raw.replace(/\s+/g,"");
+    ok=u===exp;
+    let m=0; for(let i=0;i<Math.min(u.length,exp.length);i++) if(u[i]===exp[i]) m++;
+    det=ok?"Semua tepat · +10":"Benar "+m+"/"+exp.length+" · "+exp;
+  }
+  const fb=$("fbL"); fb.classList.remove("success","error"); fb.classList.add("show");
+  if(ok){
+    fb.classList.add("success"); $("fbIconL").textContent="✓"; $("fbTextL").textContent="Benar!"; $("fbDetL").textContent=det;
+    addScore(10); spawn("partL");
+    setTimeout(showQ, 1100);
+  } else {
+    fb.classList.add("error"); $("fbIconL").textContent="✗"; $("fbTextL").textContent="Belum tepat"; $("fbDetL").textContent=det;
+    $("cardL").classList.add("shake"); setTimeout(()=>$("cardL").classList.remove("shake"),520);
+  }
+}
+
+$("startL").onclick=()=>{ if(sel.size===0) return; goTo("screenLatihanPlay"); setTimeout(showQ,320); };
+$("btnCheck").onclick=checkL;
+$("btnNew").onclick=showQ;
+$("ans").onkeydown=e=>{ if(e.key==="Enter"){ e.preventDefault(); if(!answered) checkL(); else showQ(); } };
+
+function showSusun(){
+  target=makeQ(selS,scriptS,jumlahS); if(!target) return;
+  filled=[]; done=false; busy=false;
+  $("fbS").classList.remove("show","success","error");
+  $("hintS").textContent=target.map(x=>x.r).join(" · ").toUpperCase();
+  const slots=$("slots"); slots.innerHTML="";
+  target.forEach((it,i)=>{
+    const s=document.createElement("div");
+    s.className="slot"+(it.k.length>1?" wide":"");
+    s.dataset.i=i;
+    slots.appendChild(s);
+  });
+  const pool=$("pool"); pool.innerHTML="";
+  let sh=[...target].sort(()=>Math.random()-.5);
+  if(sh.length>1 && sh.every((x,i)=>x.k===target[i].k)){ const t=sh[0]; sh[0]=sh[1]; sh[1]=t; }
+  sh.forEach((item)=>{
+    const b=document.createElement("button");
+    b.className="pool-letter"+(item.k.length>1?" wide":"");
+    b.textContent=item.k; b.dataset.k=item.k;
+    b.onclick=()=>tapLetter(b,item);
+    pool.appendChild(b);
+  });
+}
+
+function tapLetter(btn, item){
+  if(done || busy || btn.classList.contains("used")) return;
+  const idx=filled.length;
+  if(idx>=target.length) return;
+  busy=true;
+  document.querySelectorAll("#pool .pool-letter").forEach(b=>b.classList.add("locked"));
+  const slot=document.querySelectorAll("#slots .slot")[idx];
+  const sr=slot.getBoundingClientRect();
+  const br=btn.getBoundingClientRect();
+  const isWide=item.k.length>1;
+  const fly=document.createElement("div");
+  fly.className="fly-letter"+(isWide?" wide":"");
+  fly.textContent=item.k;
+  fly.style.left=br.left+"px";
+  fly.style.top=br.top+"px";
+  document.body.appendChild(fly);
+  btn.classList.add("used");
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      const fw=isWide?92:64;
+      fly.style.left=(sr.left+(sr.width-fw)/2)+"px";
+      fly.style.top=(sr.top+(sr.height-70)/2)+"px";
+      fly.style.transform="scale(.92)";
+    });
+  });
+  setTimeout(()=>{
+    fly.style.opacity="0";
+    setTimeout(()=>fly.remove(),150);
+    slot.textContent=item.k;
+    slot.classList.add("filled");
+    filled.push(item);
+    busy=false;
+    document.querySelectorAll("#pool .pool-letter:not(.used)").forEach(b=>b.classList.remove("locked"));
+    if(filled.length===target.length) checkSusun();
+  },420);
+}
+
+function checkSusun(){
+  done=true;
+  const slots=document.querySelectorAll("#slots .slot");
+  let ok=true;
+  filled.forEach((it,i)=>{
+    if(it.k===target[i].k) slots[i].classList.add("correct");
+    else{ slots[i].classList.add("wrong"); ok=false; }
+  });
+  const fb=$("fbS"); fb.classList.remove("success","error"); fb.classList.add("show");
+  if(ok){
+    fb.classList.add("success"); $("fbIconS").textContent="✓"; $("fbTextS").textContent="Sempurna!"; $("fbDetS").textContent="Urutan benar · +15";
+    addScore(15); spawn("partS");
+    setTimeout(showSusun, 900);
+  } else {
+    fb.classList.add("error"); $("fbIconS").textContent="✗"; $("fbTextS").textContent="Masih salah"; $("fbDetS").textContent="Jawaban: "+target.map(x=>x.k).join("");
+    $("cardS").classList.add("shake"); setTimeout(()=>$("cardS").classList.remove("shake"),520);
+  }
+}
+
+function resetSusun(){
+  filled=[]; done=false; busy=false;
+  $("fbS").classList.remove("show","success","error");
+  document.querySelectorAll("#slots .slot").forEach(s=>{ s.textContent=""; s.className="slot"; });
+  document.querySelectorAll("#pool .pool-letter").forEach(b=>{ b.classList.remove("used","locked"); });
+}
+
+$("startS").onclick=()=>{ if(selS.size===0) return; goTo("screenSusunPlay"); setTimeout(showSusun,320); };
+$("btnNewS").onclick=showSusun;
+$("btnResetS").onclick=resetSusun;
+
+function spawn(id){
+  const el=$(id); el.innerHTML="";
+  const cols=["#34c759","#0071e3","#ff9500","#af52de","#ff2d55"];
+  for(let i=0;i<16;i++){
+    const p=document.createElement("div"); p.className="particle";
+    p.style.left="50%"; p.style.top="30%"; p.style.background=cols[i%cols.length];
+    const a=(Math.PI*2*i)/16, d=50+Math.random()*70;
+    p.style.setProperty("--tx",Math.cos(a)*d+"px");
+    p.style.setProperty("--ty",Math.sin(a)*d+"px");
+    p.style.animationDelay=(Math.random()*.12)+"s";
+    el.appendChild(p);
+  }
+}
+
+/* ===== Lukis Huruf ===== */
+const canvas=$("drawCanvas");
+const ctx=canvas.getContext("2d");
+let canvasReady=false;
+
+function resizeCanvas(){
+  const area=$("drawArea");
+  const rect=area.getBoundingClientRect();
+  const dpr=window.devicePixelRatio||1;
+  canvas.width=rect.width*dpr;
+  canvas.height=rect.height*dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.lineCap="round";
+  ctx.lineJoin="round";
+  ctx.strokeStyle="#1d1d1f";
+  ctx.lineWidth=7;
+  canvasReady=true;
+}
+
+function clearCanvas(){
+  if(!canvasReady) return;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+}
+
+function getPos(e){
+  const rect=canvas.getBoundingClientRect();
+  const t=e.touches?e.touches[0]:e;
+  return {x:t.clientX-rect.left, y:t.clientY-rect.top};
+}
+
+function startDraw(e){
+  e.preventDefault();
+  drawing=true;
+  const p=getPos(e);
+  lastX=p.x; lastY=p.y;
+  ctx.beginPath();
+  ctx.moveTo(lastX,lastY);
+  ctx.lineTo(lastX+.01,lastY+.01);
+  ctx.stroke();
+}
+function moveDraw(e){
+  if(!drawing) return;
+  e.preventDefault();
+  const p=getPos(e);
+  ctx.beginPath();
+  ctx.moveTo(lastX,lastY);
+  ctx.lineTo(p.x,p.y);
+  ctx.stroke();
+  lastX=p.x; lastY=p.y;
+}
+function endDraw(e){ drawing=false; }
+
+canvas.addEventListener("mousedown",startDraw);
+canvas.addEventListener("mousemove",moveDraw);
+canvas.addEventListener("mouseup",endDraw);
+canvas.addEventListener("mouseleave",endDraw);
+canvas.addEventListener("touchstart",startDraw,{passive:false});
+canvas.addEventListener("touchmove",moveDraw,{passive:false});
+canvas.addEventListener("touchend",endDraw);
+canvas.addEventListener("touchcancel",endDraw);
+
+function showLukis(){
+  const picks=makeQ(selD,scriptD,1);
+  if(!picks) return;
+  curDraw=picks[0];
+  $("hintD").textContent=curDraw.r.toUpperCase();
+  const ref=$("drawRef");
+  ref.textContent=curDraw.k;
+  ref.classList.toggle("wide", curDraw.k.length>1);
+  ref.classList.toggle("hidden",!showRef);
+  $("btnShowRef").classList.toggle("active",showRef);
+  $("btnShowRef").textContent=showRef?"Huruf Ditampilkan":"Huruf Disembunyikan";
+  clearCanvas();
+  setTimeout(resizeCanvas,50);
+}
+
+$("startD").onclick=()=>{
+  if(selD.size===0) return;
+  goTo("screenLukisPlay");
+  setTimeout(()=>{ resizeCanvas(); showLukis(); },340);
+};
+$("btnNewD").onclick=()=>{ clearCanvas(); showLukis(); };
+$("btnClearD").onclick=clearCanvas;
+$("btnShowRef").onclick=()=>{
+  showRef=!showRef;
+  $("drawRef").classList.toggle("hidden",!showRef);
+  $("btnShowRef").classList.toggle("active",showRef);
+  $("btnShowRef").textContent=showRef?"Huruf Ditampilkan":"Huruf Disembunyikan";
+};
+
+window.addEventListener("resize",()=>{
+  if(currentScreen==="screenLukisPlay") resizeCanvas();
+});
+
+/* ===== Cara Tulis / Kamus ===== */
+let kamusScript="hiragana";
+
+
+function renderKamus(){
+  const grid=$("gridK");
+  grid.innerHTML="";
+  const list=kamusScript==="katakana"?K:H;
+  const gs=[
+    {l:"A",s:0,e:5},{l:"K",s:5,e:10},{l:"S",s:10,e:15},{l:"T",s:15,e:20},{l:"N",s:20,e:25},
+    {l:"H",s:25,e:30},{l:"M",s:30,e:35},{l:"Y",s:35,e:38},{l:"R",s:38,e:43},{l:"W N",s:43,e:46},
+    {l:"G Z D B",s:46,e:66},{l:"P",s:66,e:71},
+    {l:"Yōon (Kombinasi)",s:71,e:120}
+  ];
+  gs.forEach(g=>{
+    if(g.s>=list.length) return;
+    const lab=document.createElement("div");
+    lab.className="row-label"; lab.textContent=g.l;
+    grid.appendChild(lab);
+    for(let i=g.s;i<Math.min(g.e,list.length);i++){
+      const it=list[i];
+      const b=document.createElement("button");
+      b.className="kana-btn";
+      b.innerHTML=it.k+"<small>"+it.r+"</small>";
+      b.onclick=()=>showDetail(it);
+      grid.appendChild(b);
+    }
+  });
+}
+
+const EXAMPLES={
+  "っ":"Dipakai untuk konsonan dobel. Contoh: がっこう (gakkou = sekolah), きって (kitte = perangko)",
+  "ッ":"Dipakai untuk konsonan dobel. Contoh: サッカー (sakkā = soccer), ベッド (beddo = bed)",
+  "ゃ":"Huruf kecil ya, dipakai di Yōon. Contoh: きゃ (kya)",
+  "ゅ":"Huruf kecil yu, dipakai di Yōon. Contoh: きゅ (kyu)",
+  "ょ":"Huruf kecil yo, dipakai di Yōon. Contoh: きょ (kyo)",
+  "ャ":"Huruf kecil ya (Katakana). Contoh: キャ (kya)",
+  "ュ":"Huruf kecil yu (Katakana). Contoh: キュ (kyu)",
+  "ョ":"Huruf kecil yo (Katakana). Contoh: キョ (kyo)",
+  "きゃ":"Cara baca: kya. Contoh: きゃく (kyaku = tamu)",
+  "きゅ":"Cara baca: kyu. Contoh: きゅう (kyū = sembilan / bola)",
+  "きょ":"Cara baca: kyo. Contoh: きょう (kyō = hari ini)",
+  "しゃ":"Cara baca: sha. Contoh: しゃしん (shashin = foto)",
+  "しゅ":"Cara baca: shu. Contoh: しゅみ (shumi = hobi)",
+  "しょ":"Cara baca: sho. Contoh: しょうゆ (shōyu = kecap)",
+  "ちゃ":"Cara baca: cha. Contoh: お茶 (ocha = teh)",
+  "ちゅ":"Cara baca: chu. Contoh: ちゅうい (chūi = perhatian)",
+  "ちょ":"Cara baca: cho. Contoh: ちょっと (chotto = sebentar)",
+  "にゃ":"Cara baca: nya. Contoh: にゃんこ (nyanko = kucing kecil)",
+  "にゅ":"Cara baca: nyu. Contoh: にゅうがく (nyūgaku = masuk sekolah)",
+  "にょ":"Cara baca: nyo. Contoh: にょうぼう (nyōbō = istri)",
+  "ひゃ":"Cara baca: hya. Contoh: ひゃく (hyaku = seratus)",
+  "ひゅ":"Cara baca: hyu. Contoh: ひゅうが (Hyūga)",
+  "ひょ":"Cara baca: hyo. Contoh: ひょう (hyō = tabel / macan tutul)",
+  "みゃ":"Cara baca: mya. Contoh: みゃく (myaku = nadi)",
+  "みゅ":"Cara baca: myu. Contoh: ミュージック (myūjikku = music)",
+  "みょ":"Cara baca: myo. Contoh: みょうじ (myōji = nama keluarga)",
+  "りゃ":"Cara baca: rya. Contoh: りゃく (ryaku = singkatan)",
+  "りゅ":"Cara baca: ryu. Contoh: りゅう (ryū = naga)",
+  "りょ":"Cara baca: ryo. Contoh: りょうり (ryōri = masakan)",
+  "ぎゃ":"Cara baca: gya. Contoh: ぎゃく (gyaku = kebalikan)",
+  "ぎゅ":"Cara baca: gyu. Contoh: ぎゅうにゅう (gyūnyū = susu)",
+  "ぎょ":"Cara baca: gyo. Contoh: ぎょうざ (gyōza)",
+  "じゃ":"Cara baca: ja. Contoh: じゃあ (jā = kalau begitu)",
+  "じゅ":"Cara baca: ju. Contoh: じゅう (jū = sepuluh)",
+  "じょ":"Cara baca: jo. Contoh: じょし (joshi = perempuan)",
+  "びゃ":"Cara baca: bya. Contoh: さんびゃく (sanbyaku = 300)",
+  "びゅ":"Cara baca: byu. Contoh: びゅう (byū)",
+  "びょ":"Cara baca: byo. Contoh: びょうき (byōki = sakit)",
+  "ぴゃ":"Cara baca: pya",
+  "ぴゅ":"Cara baca: pyu. Contoh: コンピューター (konpyūtā)",
+  "ぴょ":"Cara baca: pyo. Contoh: ぴょんぴょん (pyonpyon = lompat)",
+  "キャ":"Cara baca: kya. Contoh: キャラクター (kyarakutā = character)",
+  "キュ":"Cara baca: kyu. Contoh: キュート (kyūto = cute)",
+  "キョ":"Cara baca: kyo",
+  "シャ":"Cara baca: sha. Contoh: シャツ (shatsu = shirt)",
+  "シュ":"Cara baca: shu. Contoh: シューズ (shūzu = shoes)",
+  "ショ":"Cara baca: sho. Contoh: ショッピング (shoppingu)",
+  "チャ":"Cara baca: cha. Contoh: チャンス (chansu = chance)",
+  "チュ":"Cara baca: chu. Contoh: チュー (chū = kiss sound)",
+  "チョ":"Cara baca: cho. Contoh: チョコ (choko = chocolate)",
+  "ニャ":"Cara baca: nya",
+  "ニュ":"Cara baca: nyu. Contoh: ニュース (nyūsu = news)",
+  "ニョ":"Cara baca: nyo",
+  "ヒャ":"Cara baca: hya",
+  "ヒュ":"Cara baca: hyu",
+  "ヒョ":"Cara baca: hyo",
+  "ミャ":"Cara baca: mya",
+  "ミュ":"Cara baca: myu. Contoh: ミュージック (myūjikku)",
+  "ミョ":"Cara baca: myo",
+  "リャ":"Cara baca: rya",
+  "リュ":"Cara baca: ryu. Contoh: リュック (ryukku = backpack)",
+  "リョ":"Cara baca: ryo",
+  "ギャ":"Cara baca: gya. Contoh: ギャグ (gyagu = gag)",
+  "ギュ":"Cara baca: gyu",
+  "ギョ":"Cara baca: gyo",
+  "ジャ":"Cara baca: ja. Contoh: ジャム (jamu = jam)",
+  "ジュ":"Cara baca: ju. Contoh: ジュース (jūsu = juice)",
+  "ジョ":"Cara baca: jo. Contoh: ジョーク (jōku = joke)",
+  "ビャ":"Cara baca: bya",
+  "ビュ":"Cara baca: byu",
+  "ビョ":"Cara baca: byo",
+  "ピャ":"Cara baca: pya",
+  "ピュ":"Cara baca: pyu. Contoh: ピュア (pyua = pure)",
+  "ピョ":"Cara baca: pyo"
+};
+
+const strokeCache={};
+let currentStrokeAnim=null;
+
+async function loadStrokeData(char){
+  if(strokeCache[char]) return strokeCache[char];
+  const code=char.codePointAt(0);
+  const isKata=(code>=0x30A0&&code<=0x30FF);
+  const folder=isKata?"katakana":"hiragana";
+  const url=`https://cdn.jsdelivr.net/npm/kana-svg-data/dist/${folder}/${encodeURIComponent(char)}.json`;
+  try{
+    const res=await fetch(url);
+    if(!res.ok) throw new Error("not found");
+    const data=await res.json();
+    strokeCache[char]=data;
+    return data;
+  }catch(e){
+    return null;
+  }
+}
+
+function renderStrokeSVG(data, container){
+  container.innerHTML="";
+  if(!data||!data.strokes||!data.strokes.length){
+    container.innerHTML='<div class="stroke-loading">Data goresan tidak tersedia</div>';
+    return null;
+  }
+  const svgNS="http://www.w3.org/2000/svg";
+  const svg=document.createElementNS(svgNS,"svg");
+  svg.setAttribute("viewBox","50 50 900 900");
+  svg.setAttribute("width","100%");
+  svg.setAttribute("height","100%");
+
+  const gPaths=document.createElementNS(svgNS,"g");
+  gPaths.setAttribute("fill","none");
+  gPaths.setAttribute("stroke","#1d1d1f");
+  gPaths.setAttribute("stroke-width","26");
+  gPaths.setAttribute("stroke-linecap","round");
+  gPaths.setAttribute("stroke-linejoin","round");
+
+  const paths=[];
+  data.strokes.forEach((st)=>{
+    if(!st.value||st.value.trim()==="") return;
+    const path=document.createElementNS(svgNS,"path");
+    path.setAttribute("d",st.value);
+    path.setAttribute("pathLength","1");
+    path.style.strokeDasharray="1";
+    path.style.strokeDashoffset="1";
+    path.style.opacity="0.15";
+    gPaths.appendChild(path);
+    paths.push(path);
+  });
+
+  svg.appendChild(gPaths);
+  container.appendChild(svg);
+
+  function animate(){
+    paths.forEach(p=>{
+      p.style.transition="none";
+      p.style.strokeDashoffset="1";
+      p.style.opacity="0.15";
+    });
+    let i=0;
+    function next(){
+      if(i>=paths.length) return;
+      const p=paths[i];
+      p.style.opacity="1";
+      p.style.transition="stroke-dashoffset 0.5s ease-out";
+      p.style.strokeDashoffset="0";
+      i++;
+      setTimeout(next, 550);
+    }
+    setTimeout(next, 150);
+  }
+  animate();
+  return animate;
+}
+
+async function showDetail(it){
+  $("detailKana").textContent=it.k;
+  $("detailRoma").textContent=it.r.toUpperCase();
+  const info=$("detailInfo");
+  if(EXAMPLES[it.k]){
+    info.innerHTML="<strong>Cara baca & contoh:</strong><br>"+EXAMPLES[it.k];
+    info.style.display="block";
+  } else if(it.r.includes("kecil")){
+    info.innerHTML="<strong>Huruf kecil</strong><br>Dipakai untuk Yōon atau konsonan dobel (っ/ッ).";
+    info.style.display="block";
+  } else {
+    info.style.display="none";
+  }
+
+  const wrap=$("strokeSvgWrap");
+  const replayBtn=$("strokeReplay");
+  wrap.innerHTML='<div class="stroke-loading">Memuat…</div>';
+  replayBtn.style.display="none";
+  currentStrokeAnim=null;
+
+  const char=it.k.length===1?it.k:null;
+  $("detailOverlay").classList.add("show");
+
+  if(char){
+    const data=await loadStrokeData(char);
+    if(data){
+      currentStrokeAnim=renderStrokeSVG(data, wrap);
+      replayBtn.style.display="block";
+    } else {
+      wrap.innerHTML='<div class="stroke-loading">Visual goresan belum tersedia</div>';
+    }
+  } else {
+    wrap.innerHTML='<div class="stroke-loading">Kombinasi · lihat huruf dasar</div>';
+  }
+}
+
+$("strokeReplay").onclick=()=>{
+  if(currentStrokeAnim) currentStrokeAnim();
+};
+
+$("swHira").onclick=()=>{
+  kamusScript="hiragana";
+  $("swHira").classList.add("active");
+  $("swKata").classList.remove("active");
+  renderKamus();
+};
+$("swKata").onclick=()=>{
+  kamusScript="katakana";
+  $("swKata").classList.add("active");
+  $("swHira").classList.remove("active");
+  renderKamus();
+};
+$("detailClose").onclick=()=>$("detailOverlay").classList.remove("show");
+$("detailOverlay").onclick=e=>{ if(e.target===$("detailOverlay")) $("detailOverlay").classList.remove("show"); };
+
+/* ===== Kotoba (Kosakata) ===== */
+const KOTOBA={
+  N5: {
+  "Kata Benda":[
+    {jp:"あさって",read:"あさって",roma:"",arti:"lusa"},
+    {jp:"あそこ",read:"あそこ",roma:"",arti:"di sana"},
+    {jp:"あちら",read:"あちら",roma:"",arti:"di situ"},
+    {jp:"あっち",read:"あっち",roma:"",arti:"di sana"},
+    {jp:"あなた",read:"あなた",roma:"",arti:"kamu"},
+    {jp:"アパート",read:"アパート",roma:"",arti:"apartemen"},
+    {jp:"あまり",read:"あまり",roma:"",arti:"tidak terlalu"},
+    {jp:"いい/よい",read:"いい/よい",roma:"",arti:"bagus"},
+    {jp:"いいえ",read:"いいえ",roma:"",arti:"tidak"},
+    {jp:"いかが",read:"いかが",roma:"",arti:"bagaimana"},
+    {jp:"いくら",read:"いくら",roma:"",arti:"berapa"},
+    {jp:"いちばん",read:"いちばん",roma:"",arti:"terbaik"},
+    {jp:"いつも",read:"いつも",roma:"",arti:"selalu"},
+    {jp:"いろいろ",read:"いろいろ",roma:"",arti:"berbagai"},
+    {jp:"エレベーター",read:"エレベーター",roma:"",arti:"lift"},
+    {jp:"おなか",read:"おなか",roma:"",arti:"perut"},
+    {jp:"おばあさん",read:"おばあさん",roma:"",arti:"nenek"},
+    {jp:"おまわりさん",read:"おまわりさん",roma:"",arti:"polisi"},
+    {jp:"おもしろい",read:"おもしろい",roma:"",arti:"menarik"},
+    {jp:"お菓子",read:"おかし",roma:"",arti:"permen"},
+    {jp:"お兄さん",read:"おにいさん",roma:"",arti:"kakak laki-laki"},
+    {jp:"お姉さん",read:"おねえさん",roma:"",arti:"kakak perempuan"},
+    {jp:"お手洗い",read:"おてあらい",roma:"",arti:"kamar mandi"},
+    {jp:"お父さん",read:"おとうさん",roma:"",arti:"ayah"},
+    {jp:"お風呂",read:"おふろ",roma:"",arti:"mandi"},
+    {jp:"お弁当",read:"おべんとう",roma:"",arti:"bekal makan"},
+    {jp:"お母さん",read:"おかあさん",roma:"",arti:"ibu"},
+    {jp:"カップ",read:"カップ",roma:"",arti:"cangkir"},
+    {jp:"かばん",read:"かばん",roma:"",arti:"tas"},
+    {jp:"カメラ",read:"カメラ",roma:"",arti:"kamera"},
+    {jp:"カレー",read:"カレー",roma:"",arti:"kari"},
+    {jp:"カレンダー",read:"カレンダー",roma:"",arti:"kalender"},
+    {jp:"かわいい",read:"かわいい",roma:"",arti:"imut / lucu"},
+    {jp:"ギター",read:"ギター",roma:"",arti:"gitar"},
+    {jp:"きれい",read:"きれい",roma:"",arti:"cantik"},
+    {jp:"キロ/キログラム",read:"キロ/キログラム",roma:"",arti:"kilogram"},
+    {jp:"キロ/キロメートル",read:"キロ/キロメートル",roma:"",arti:"kilometer"},
+    {jp:"ください",read:"ください",roma:"",arti:"tolong"},
+    {jp:"クラス",read:"クラス",roma:"",arti:"kelas"},
+    {jp:"グラム",read:"グラム",roma:"",arti:"gram"},
+    {jp:"コート",read:"コート",roma:"",arti:"jas"},
+    {jp:"コーヒー",read:"コーヒー",roma:"",arti:"kopi"},
+    {jp:"こちら",read:"こちら",roma:"",arti:"orang ini / cara ini"},
+    {jp:"こっち",read:"こっち",roma:"",arti:"orang ini / cara ini"},
+    {jp:"コップ",read:"コップ",roma:"",arti:"gelas"},
+    {jp:"こんな",read:"こんな",roma:"",arti:"seperti itu"},
+    {jp:"さ来年",read:"さらいねん",roma:"",arti:"dua tahun lagi"},
+    {jp:"しかし",read:"しかし",roma:"",arti:"however"},
+    {jp:"じゃ/じゃあ",read:"じゃ/じゃあ",roma:"",arti:"kalau begitu…"},
+    {jp:"シャツ",read:"シャツ",roma:"",arti:"kemeja"},
+    {jp:"シャワー",read:"シャワー",roma:"",arti:"shower"},
+    {jp:"しょうゆ",read:"しょうゆ",roma:"",arti:"kecap asin"},
+    {jp:"スカート",read:"スカート",roma:"",arti:"rok"},
+    {jp:"すぐに",read:"すぐに",roma:"",arti:"instantly"},
+    {jp:"ストーブ",read:"ストーブ",roma:"",arti:"pemanas"},
+    {jp:"スプーン",read:"スプーン",roma:"",arti:"sendok"},
+    {jp:"スポーツ",read:"スポーツ",roma:"",arti:"olahraga"},
+    {jp:"ズボン",read:"ズボン",roma:"",arti:"celana"},
+    {jp:"スリッパ",read:"スリッパ",roma:"",arti:"sandal"},
+    {jp:"セーター",read:"セーター",roma:"",arti:"sweater"},
+    {jp:"せっけん",read:"せっけん",roma:"",arti:"ekonomi"},
+    {jp:"そうして/そして",read:"そうして/そして",roma:"",arti:"dan"},
+    {jp:"そちら",read:"そちら",roma:"",arti:"di sana"},
+    {jp:"そっち",read:"そっち",roma:"",arti:"di sana"},
+    {jp:"それから",read:"それから",roma:"",arti:"setelah itu"},
+    {jp:"それでは",read:"それでは",roma:"",arti:"dalam situasi itu"},
+    {jp:"たいへん",read:"たいへん",roma:"",arti:"sangat"},
+    {jp:"たくさん",read:"たくさん",roma:"",arti:"banyak"},
+    {jp:"タクシー",read:"タクシー",roma:"",arti:"taksi"},
+    {jp:"たばこ",read:"たばこ",roma:"",arti:"tembakau"},
+    {jp:"たぶん",read:"たぶん",roma:"",arti:"mungkin"},
+    {jp:"だんだん",read:"だんだん",roma:"",arti:"perlahan"},
+    {jp:"ちゃわん",read:"ちゃわん",roma:"",arti:"mangkuk nasi"},
+    {jp:"ちょうど",read:"ちょうど",roma:"",arti:"tepat"},
+    {jp:"ちょっと",read:"ちょっと",roma:"",arti:"somewhat"},
+    {jp:"テープ",read:"テープ",roma:"",arti:"pita"},
+    {jp:"テーブル",read:"テーブル",roma:"",arti:"meja"},
+    {jp:"テープレコーダー",read:"テープレコーダー",roma:"",arti:"perekam kaset"},
+    {jp:"テスト",read:"テスト",roma:"",arti:"tes"},
+    {jp:"デパート",read:"デパート",roma:"",arti:"toserba"},
+    {jp:"テレビ",read:"テレビ",roma:"",arti:"televisi"},
+    {jp:"トイレ",read:"トイレ",roma:"",arti:"toilet"},
+    {jp:"どうして",read:"どうして",roma:"",arti:"untuk alasan apa"},
+    {jp:"どうぞ",read:"どうぞ",roma:"",arti:"tolong"},
+    {jp:"どうも",read:"どうも",roma:"",arti:"terima kasih"},
+    {jp:"どちら",read:"どちら",roma:"",arti:"yang mana dari dua"},
+    {jp:"どっち",read:"どっち",roma:"",arti:"yang mana"},
+    {jp:"とても",read:"とても",roma:"",arti:"sangat"},
+    {jp:"どなた",read:"どなた",roma:"",arti:"siapa"},
+    {jp:"とり肉",read:"とりにく",roma:"",arti:"daging ayam"},
+    {jp:"ナイフ",read:"ナイフ",roma:"",arti:"pisau"},
+    {jp:"ニュース",read:"ニュース",roma:"",arti:"berita"},
+    {jp:"ネクタイ",read:"ネクタイ",roma:"",arti:"dasi / hasil imbang"},
+    {jp:"ノート",read:"ノート",roma:"",arti:"buku catatan"},
+    {jp:"パーティー",read:"パーティー",roma:"",arti:"pesta"},
+    {jp:"バター",read:"バター",roma:"",arti:"mentega"},
+    {jp:"ハンカチ",read:"ハンカチ",roma:"",arti:"sapu tangan"},
+    {jp:"フィルム",read:"フィルム",roma:"",arti:"gulungan film"},
+    {jp:"プール",read:"プール",roma:"",arti:"kolam renang"},
+    {jp:"フォーク",read:"フォーク",roma:"",arti:"garpu"},
+    {jp:"ページ",read:"ページ",roma:"",arti:"halaman"},
+    {jp:"ベッド",read:"ベッド",roma:"",arti:"tempat tidur"},
+    {jp:"ペット",read:"ペット",roma:"",arti:"hewan peliharaan"},
+    {jp:"ボールペン",read:"ボールペン",roma:"",arti:"pulpen"},
+    {jp:"ポケット",read:"ポケット",roma:"",arti:"saku"},
+    {jp:"ポスト",read:"ポスト",roma:"",arti:"pos"},
+    {jp:"ボタン",read:"ボタン",roma:"",arti:"tombol / kancing"},
+    {jp:"ホテル",read:"ホテル",roma:"",arti:"hotel"},
+    {jp:"まずい",read:"まずい",roma:"",arti:"tidak menyenangkan"},
+    {jp:"マッチ",read:"マッチ",roma:"",arti:"pertandingan"},
+    {jp:"みんな",read:"みんな",roma:"",arti:"semua orang"},
+    {jp:"メートル",read:"メートル",roma:"",arti:"metre"},
+    {jp:"もう一度",read:"もういちど",roma:"",arti:"lagi"},
+    {jp:"もっと",read:"もっと",roma:"",arti:"lebih"},
+    {jp:"ゆっくりと",read:"ゆっくりと",roma:"",arti:"pelan"},
+    {jp:"ラジオ",read:"ラジオ",roma:"",arti:"radio"},
+    {jp:"ラジカセ / ラジオカセット",read:"ラジカセ / ラジオカセット",roma:"",arti:"radio kaset"},
+    {jp:"りっぱ",read:"りっぱ",roma:"",arti:"splendid"},
+    {jp:"レコード",read:"レコード",roma:"",arti:"catatan / rekor"},
+    {jp:"レストラン",read:"レストラン",roma:"",arti:"restoran"},
+    {jp:"ワイシャツ",read:"ワイシャツ",roma:"",arti:"kemeja kerja"},
+    {jp:"一昨日",read:"おととい",roma:"",arti:"kemarin dulu"},
+    {jp:"一昨年",read:"おととし",roma:"",arti:"dua tahun lalu"},
+    {jp:"飲み物",read:"のみもの",roma:"",arti:"minuman"},
+    {jp:"映画館",read:"えいがかん",roma:"",arti:"bioskop"},
+    {jp:"奥さん",read:"おくさん",roma:"",arti:"istri"},
+    {jp:"黄色い",read:"きいろい",roma:"",arti:"kuning"},
+    {jp:"夏休み",read:"なつやすみ",roma:"",arti:"libur musim panas"},
+    {jp:"火曜日",read:"かようび",roma:"",arti:"selasa"},
+    {jp:"皆さん",read:"みなさん",roma:"",arti:"semua orang"},
+    {jp:"外国人",read:"がいこくじん",roma:"",arti:"orang asing"},
+    {jp:"丸い/円い",read:"まるい",roma:"",arti:"putaran"},
+    {jp:"喫茶店",read:"きっさてん",roma:"",arti:"kafe"},
+    {jp:"金曜日",read:"きんようび",roma:"",arti:"jumat"},
+    {jp:"月曜日",read:"げつようび",roma:"",arti:"senin"},
+    {jp:"交差点",read:"こうさてん",roma:"",arti:"persimpangan"},
+    {jp:"自転車",read:"じてんしゃ",roma:"",arti:"sepeda"},
+    {jp:"自動車",read:"じどうしゃ",roma:"",arti:"mobil"},
+    {jp:"初め/始め",read:"はじめ",roma:"",arti:"awal"},
+    {jp:"初めて",read:"はじめて",roma:"",arti:"untuk pertama kali"},
+    {jp:"女の子",read:"おんなのこ",roma:"",arti:"anak perempuan"},
+    {jp:"小さい",read:"ちいさい",roma:"",arti:"kecil"},
+    {jp:"小さな",read:"ちいさな",roma:"",arti:"kecil"},
+    {jp:"食べ物",read:"たべもの",roma:"",arti:"makanan"},
+    {jp:"図書館",read:"としょかん",roma:"",arti:"perpustakaan"},
+    {jp:"水曜日",read:"すいようび",roma:"",arti:"rabu"},
+    {jp:"川/河",read:"かわ",roma:"",arti:"sungai"},
+    {jp:"大きい",read:"おおきい",roma:"",arti:"besar"},
+    {jp:"大きな",read:"おおきな",roma:"",arti:"besar"},
+    {jp:"大使館",read:"たいしかん",roma:"",arti:"embassy"},
+    {jp:"大丈夫",read:"だいじょうぶ",roma:"",arti:"baiklah"},
+    {jp:"誕生日",read:"たんじょうび",roma:"",arti:"ulang tahun"},
+    {jp:"暖かい",read:"あたたかい",roma:"",arti:"hangat"},
+    {jp:"男の子",read:"おとこのこ",roma:"",arti:"anak laki-laki"},
+    {jp:"地下鉄",read:"ちかてつ",roma:"",arti:"kereta bawah tanah"},
+    {jp:"昼御飯",read:"ひるごはん",roma:"",arti:"makan siang"},
+    {jp:"朝御飯",read:"あさごはん",roma:"",arti:"sarapan"},
+    {jp:"土曜日",read:"どようび",roma:"",arti:"sabtu"},
+    {jp:"二十歳",read:"はたち",roma:"",arti:"20 tahun"},
+    {jp:"二十日",read:"はつか",roma:"",arti:"dua puluh hari"},
+    {jp:"賑やか",read:"にぎやか",roma:"",arti:"ramai"},
+    {jp:"日曜日",read:"にちようび",roma:"",arti:"minggu"},
+    {jp:"買い物",read:"かいもの",roma:"",arti:"belanja"},
+    {jp:"伯父/叔父",read:"おじいさん",roma:"",arti:"kakek"},
+    {jp:"伯母さん/叔母さん",read:"おばさん",roma:"",arti:"bibi"},
+    {jp:"八百屋",read:"やおや",roma:"",arti:"greengrocer"},
+    {jp:"晩御飯",read:"ばんごはん",roma:"",arti:"makan malam"},
+    {jp:"飛行機",read:"ひこうき",roma:"",arti:"pesawat"},
+    {jp:"万年筆",read:"まんねんひつ",roma:"",arti:"pulpen tinta"},
+    {jp:"木曜日",read:"もくようび",roma:"",arti:"kamis"},
+    {jp:"郵便局",read:"ゆうびんきょく",roma:"",arti:"kantor pos"},
+    {jp:"留学生",read:"りゅうがくせい",roma:"",arti:"mahasiswa asing"},
+    {jp:"冷蔵庫",read:"れいぞうこ",roma:"",arti:"kulkas"}
+  ],
+  "Kata Kerja":[
+    {jp:"あびる",read:"あびる",roma:"",arti:"mandi"},
+    {jp:"ある",read:"ある",roma:"",arti:"ada / menjadi"},
+    {jp:"いくつ",read:"いくつ",roma:"",arti:"berapa banyak?"},
+    {jp:"いす",read:"いす",roma:"",arti:"kursi"},
+    {jp:"いつ",read:"いつ",roma:"",arti:"kapan"},
+    {jp:"かかる",read:"かかる",roma:"",arti:"memakan waktu / uang"},
+    {jp:"かける",read:"かける",roma:"",arti:"menelepon"},
+    {jp:"コピーする",read:"コピーする",roma:"",arti:"salinan"},
+    {jp:"する",read:"する",roma:"",arti:"melakukan"},
+    {jp:"つける",read:"つける",roma:"",arti:"menyalakan"},
+    {jp:"できる",read:"できる",roma:"",arti:"bisa"},
+    {jp:"どう",read:"どう",roma:"",arti:"bagaimana"},
+    {jp:"なる",read:"なる",roma:"",arti:"menjadi"},
+    {jp:"はく",read:"はく",roma:"",arti:"memakai"},
+    {jp:"ほんとう",read:"ほんとう",roma:"",arti:"kebenaran"},
+    {jp:"まっすぐ",read:"まっすぐ",roma:"",arti:"lurus ke depan"},
+    {jp:"もう",read:"もう",roma:"",arti:"sudah"},
+    {jp:"やる",read:"やる",roma:"",arti:"melakukan"},
+    {jp:"よく",read:"よく",roma:"",arti:"sering"},
+    {jp:"より、ほう",read:"より、ほう",roma:"",arti:"untuk perbandingan"},
+    {jp:"違う",read:"ちがう",roma:"",arti:"berbeda"},
+    {jp:"一つ",read:"ひとつ",roma:"",arti:"satu"},
+    {jp:"引く",read:"ひく",roma:"",arti:"menarik"},
+    {jp:"飲む",read:"のむ",roma:"",arti:"minum"},
+    {jp:"泳ぐ",read:"およぐ",roma:"",arti:"berenang"},
+    {jp:"押す",read:"おす",roma:"",arti:"mendorong"},
+    {jp:"歌う",read:"うたう",roma:"",arti:"menyanyi"},
+    {jp:"会う",read:"あう",roma:"",arti:"bertemu"},
+    {jp:"開く",read:"あく",roma:"",arti:"membuka"},
+    {jp:"開ける",read:"あける",roma:"",arti:"membuka"},
+    {jp:"覚える",read:"おぼえる",roma:"",arti:"mengingat"},
+    {jp:"帰る",read:"かえる",roma:"",arti:"kembali"},
+    {jp:"起きる",read:"おきる",roma:"",arti:"bangun"},
+    {jp:"休む",read:"やすむ",roma:"",arti:"istirahat"},
+    {jp:"吸う",read:"すう",roma:"",arti:"merokok"},
+    {jp:"居る",read:"いる",roma:"",arti:"ada / menjadi"},
+    {jp:"教える",read:"おしえる",roma:"",arti:"mengajar"},
+    {jp:"曲る",read:"まがる",roma:"",arti:"berbelok / memutar"},
+    {jp:"勤める",read:"つとめる",roma:"",arti:"bekerja untuk seseorang"},
+    {jp:"近く",read:"ちかく",roma:"",arti:"dekat"},
+    {jp:"九つ",read:"ここのつ",roma:"",arti:"sembilan"},
+    {jp:"見せる",read:"みせる",roma:"",arti:"menunjukkan"},
+    {jp:"見る 観る",read:"みる",roma:"",arti:"melihat"},
+    {jp:"言う",read:"いう",roma:"",arti:"berkata"},
+    {jp:"呼ぶ",read:"よぶ",roma:"",arti:"memanggil"},
+    {jp:"五つ",read:"いつつ",roma:"",arti:"lima"},
+    {jp:"向こう",read:"むこう",roma:"",arti:"di sana"},
+    {jp:"行く",read:"いく",roma:"",arti:"pergi"},
+    {jp:"降りる",read:"おりる",roma:"",arti:"turun"},
+    {jp:"降る",read:"ふる",roma:"",arti:"musim gugur"},
+    {jp:"困る",read:"こまる",roma:"",arti:"khawatir"},
+    {jp:"差す",read:"さす",roma:"",arti:"mengulurkan tangan"},
+    {jp:"座る",read:"すわる",roma:"",arti:"duduk"},
+    {jp:"咲く",read:"さく",roma:"",arti:"mekar"},
+    {jp:"作る",read:"つくる",roma:"",arti:"membuat"},
+    {jp:"撮る",read:"とる",roma:"",arti:"memotret / merekam"},
+    {jp:"三つ",read:"みっつ",roma:"",arti:"tiga"},
+    {jp:"散歩",read:"さんぽする",roma:"",arti:"jalan-jalan"},
+    {jp:"使う",read:"つかう",roma:"",arti:"menggunakan"},
+    {jp:"四つ",read:"よっつ",roma:"",arti:"empat"},
+    {jp:"始まる",read:"はじまる",roma:"",arti:"memulai"},
+    {jp:"止まる",read:"とまる",roma:"",arti:"berhenti"},
+    {jp:"死ぬ",read:"しぬ",roma:"",arti:"mati"},
+    {jp:"持つ",read:"もつ",roma:"",arti:"membawa"},
+    {jp:"七つ",read:"ななつ",roma:"",arti:"tujuh"},
+    {jp:"借りる",read:"かりる",roma:"",arti:"meminjam"},
+    {jp:"取る",read:"とる",roma:"",arti:"mengambil sesuatu"},
+    {jp:"終る",read:"おわる",roma:"",arti:"selesai"},
+    {jp:"習う",read:"ならう",roma:"",arti:"belajar"},
+    {jp:"住む",read:"すむ",roma:"",arti:"tinggal di"},
+    {jp:"出かける",read:"でかける",roma:"",arti:"keluar"},
+    {jp:"出す",read:"だす",roma:"",arti:"memadamkan"},
+    {jp:"出る",read:"でる",roma:"",arti:"muncul"},
+    {jp:"書く",read:"かく",roma:"",arti:"menulis"},
+    {jp:"消える",read:"きえる",roma:"",arti:"menghilang"},
+    {jp:"消す",read:"けす",roma:"",arti:"menghapus"},
+    {jp:"上げる",read:"あげる",roma:"",arti:"memberi"},
+    {jp:"乗る",read:"のる",roma:"",arti:"naik"},
+    {jp:"食べる",read:"たべる",roma:"",arti:"makan"},
+    {jp:"寝る",read:"ねる",roma:"",arti:"tidur"},
+    {jp:"吹く",read:"ふく",roma:"",arti:"meniup"},
+    {jp:"晴れる",read:"はれる",roma:"",arti:"ada / menjadi"},
+    {jp:"生まれる",read:"うまれる",roma:"",arti:"lahir"},
+    {jp:"切る",read:"きる",roma:"",arti:"memotong"},
+    {jp:"洗う",read:"あらう",roma:"",arti:"mencuci"},
+    {jp:"掃除",read:"そうじする",roma:"",arti:"membersihkan"},
+    {jp:"走る",read:"はしる",roma:"",arti:"berlari"},
+    {jp:"待つ",read:"まつ",roma:"",arti:"menunggu"},
+    {jp:"貸す",read:"かす",roma:"",arti:"meminjamkan"},
+    {jp:"大好き",read:"だいすき",roma:"",arti:"ada / menjadi"},
+    {jp:"脱ぐ",read:"ぬぐ",roma:"",arti:"lepas landas / melepas"},
+    {jp:"弾く",read:"ひく",roma:"",arti:"memainkan alat musik senar"},
+    {jp:"知る",read:"しる",roma:"",arti:"tahu"},
+    {jp:"置く",read:"おく",roma:"",arti:"meletakkan"},
+    {jp:"着く",read:"つく",roma:"",arti:"tiba di"},
+    {jp:"着る",read:"きる",roma:"",arti:"memakai"},
+    {jp:"締める",read:"しめる",roma:"",arti:"mengikat"},
+    {jp:"貼る",read:"はる",roma:"",arti:"menempel"},
+    {jp:"渡す",read:"わたす",roma:"",arti:"menyerahkan"},
+    {jp:"渡る",read:"わたる",roma:"",arti:"menyeberang"},
+    {jp:"登る",read:"のぼる",roma:"",arti:"memanjat"},
+    {jp:"答える",read:"こたえる",roma:"",arti:"jawaban"},
+    {jp:"働く",read:"はたらく",roma:"",arti:"bekerja"},
+    {jp:"読む",read:"よむ",roma:"",arti:"membaca"},
+    {jp:"曇る",read:"くもる",roma:"",arti:"menjadi mendung"},
+    {jp:"二つ",read:"ふたつ",roma:"",arti:"dua"},
+    {jp:"入る",read:"はいる",roma:"",arti:"masuk"},
+    {jp:"入れる",read:"いれる",roma:"",arti:"memasukkan"},
+    {jp:"買う",read:"かう",roma:"",arti:"membeli"},
+    {jp:"売る",read:"うる",roma:"",arti:"menjual"},
+    {jp:"八つ",read:"やっつ",roma:"",arti:"delapan"},
+    {jp:"疲れる",read:"つかれる",roma:"",arti:"lelah"},
+    {jp:"飛ぶ",read:"とぶ",roma:"",arti:"terbang"},
+    {jp:"分かる",read:"わかる",roma:"",arti:"ada / menjadi"},
+    {jp:"聞く",read:"きく",roma:"",arti:"mendengar"},
+    {jp:"並ぶ",read:"ならぶ",roma:"",arti:"mengantri"},
+    {jp:"並べる",read:"ならべる",roma:"",arti:"mengantri"},
+    {jp:"閉まる",read:"しまる",roma:"",arti:"menutup"},
+    {jp:"閉める",read:"しめる",roma:"",arti:"menutup sesuatu"},
+    {jp:"返す",read:"かえす",roma:"",arti:"mengembalikan sesuatu"},
+    {jp:"勉強",read:"べんきょうする",roma:"",arti:"belajar"},
+    {jp:"歩く",read:"あるく",roma:"",arti:"berjalan"},
+    {jp:"忘れる",read:"わすれる",roma:"",arti:"lupa"},
+    {jp:"磨く",read:"みがく",roma:"",arti:"sikat gigi"},
+    {jp:"無くす",read:"なくす",roma:"",arti:"kehilangan sesuatu"},
+    {jp:"鳴く",read:"なく",roma:"",arti:"suara hewan / berkicau"},
+    {jp:"遊ぶ",read:"あそぶ",roma:"",arti:"bermain"},
+    {jp:"要る",read:"いる",roma:"",arti:"butuh"},
+    {jp:"来る",read:"くる",roma:"",arti:"datang"},
+    {jp:"頼む",read:"たのむ",roma:"",arti:"bertanya"},
+    {jp:"立つ",read:"たつ",roma:"",arti:"berdiri"},
+    {jp:"練習",read:"れんしゅうする",roma:"",arti:"berlatih"},
+    {jp:"六つ",read:"むっつ",roma:"",arti:"enam"},
+    {jp:"話す",read:"はなす",roma:"",arti:"berbicara"}
+  ],
+  "Kata Sifat":[
+    {jp:"おいしい",read:"おいしい",roma:"",arti:"enak"},
+    {jp:"つまらない",read:"つまらない",roma:"",arti:"membosankan"},
+    {jp:"易しい",read:"やさしい",roma:"",arti:"mudah"},
+    {jp:"楽しい",read:"たのしい",roma:"",arti:"enjoyable"},
+    {jp:"危ない",read:"あぶない",roma:"",arti:"berbahaya"},
+    {jp:"少ない",read:"すくない",roma:"",arti:"beberapa"},
+    {jp:"新しい",read:"あたらしい",roma:"",arti:"baru"},
+    {jp:"難しい",read:"むずかしい",roma:"",arti:"sulit"},
+    {jp:"忙しい",read:"いそがしい",roma:"",arti:"sibuk"},
+    {jp:"欲しい",read:"ほしい",roma:"",arti:"want"},
+    {jp:"涼しい",read:"すずしい",roma:"",arti:"refreshing"},
+    {jp:"冷たい",read:"つめたい",roma:"",arti:"dingin (saat disentuh)"}
+  ],
+  "Lainnya":[
+    {jp:"あの",read:"あの",roma:"",arti:"itu di sana"},
+    {jp:"あれ",read:"あれ",roma:"",arti:"itu"},
+    {jp:"ええ",read:"ええ",roma:"",arti:"ya"},
+    {jp:"お金",read:"おかね",roma:"",arti:"uang"},
+    {jp:"お皿",read:"おさら",roma:"",arti:"piring"},
+    {jp:"お酒",read:"おさけ",roma:"",arti:"alkohol"},
+    {jp:"お茶",read:"おちゃ",roma:"",arti:"teh hijau"},
+    {jp:"かぎ",read:"かぎ",roma:"",arti:"kunci"},
+    {jp:"ここ",read:"ここ",roma:"",arti:"di sini"},
+    {jp:"この",read:"この",roma:"",arti:"ini"},
+    {jp:"これ",read:"これ",roma:"",arti:"ini"},
+    {jp:"さあ",read:"さあ",roma:"",arti:"well…"},
+    {jp:"ゼロ",read:"ゼロ",roma:"",arti:"zero"},
+    {jp:"そこ",read:"そこ",roma:"",arti:"tempat itu"},
+    {jp:"その",read:"その",roma:"",arti:"itu"},
+    {jp:"そば",read:"そば",roma:"",arti:"dekat"},
+    {jp:"それ",read:"それ",roma:"",arti:"itu"},
+    {jp:"たて",read:"たて",roma:"",arti:"panjang"},
+    {jp:"では",read:"では",roma:"",arti:"dengan itu..."},
+    {jp:"でも",read:"でも",roma:"",arti:"tapi"},
+    {jp:"ドア",read:"ドア",roma:"",arti:"pintu gaya Barat"},
+    {jp:"どこ",read:"どこ",roma:"",arti:"di mana"},
+    {jp:"どの",read:"どの",roma:"",arti:"yang mana"},
+    {jp:"どれ",read:"どれ",roma:"",arti:"yang mana"},
+    {jp:"なぜ",read:"なぜ",roma:"",arti:"mengapa"},
+    {jp:"など",read:"など",roma:"",arti:"dan sebagainya"},
+    {jp:"はい",read:"はい",roma:"",arti:"ya"},
+    {jp:"はし",read:"はし",roma:"",arti:"sumpit"},
+    {jp:"バス",read:"バス",roma:"",arti:"bis"},
+    {jp:"パン",read:"パン",roma:"",arti:"roti"},
+    {jp:"ふろ",read:"ふろ",roma:"",arti:"mandi"},
+    {jp:"ペン",read:"ペン",roma:"",arti:"pulpen"},
+    {jp:"ほか",read:"ほか",roma:"",arti:"lain"},
+    {jp:"また",read:"また",roma:"",arti:"lagi"},
+    {jp:"まだ",read:"まだ",roma:"",arti:"belum"},
+    {jp:"悪い",read:"わるい",roma:"",arti:"buruk"},
+    {jp:"飴",read:"あめ",roma:"",arti:"permen"},
+    {jp:"安い",read:"やすい",roma:"",arti:"murah"},
+    {jp:"暗い",read:"くらい",roma:"",arti:"gloomy"},
+    {jp:"意味",read:"いみ",roma:"",arti:"arti"},
+    {jp:"医者",read:"いしゃ",roma:"",arti:"dokter"},
+    {jp:"一",read:"いち",roma:"",arti:"satu"},
+    {jp:"一月",read:"ひとつき",roma:"",arti:"satu bulan"},
+    {jp:"一緒",read:"いっしょ",roma:"",arti:"bersama"},
+    {jp:"一人",read:"ひとり",roma:"",arti:"satu orang"},
+    {jp:"一日",read:"いちにち",roma:"",arti:"satu hari"},
+    {jp:"右",read:"みぎ",roma:"",arti:"sisi kanan"},
+    {jp:"雨",read:"あめ",roma:"",arti:"hujan"},
+    {jp:"映画",read:"えいが",roma:"",arti:"film"},
+    {jp:"英語",read:"えいご",roma:"",arti:"bahasa Inggris"},
+    {jp:"駅",read:"えき",roma:"",arti:"stasiun"},
+    {jp:"遠い",read:"とおい",roma:"",arti:"jauh"},
+    {jp:"鉛筆",read:"えんぴつ",roma:"",arti:"pensil"},
+    {jp:"塩",read:"しお",roma:"",arti:"garam"},
+    {jp:"汚い",read:"きたない",roma:"",arti:"kotor"},
+    {jp:"横",read:"よこ",roma:"",arti:"di samping"},
+    {jp:"黄色",read:"きいろ",roma:"",arti:"kuning"},
+    {jp:"温い",read:"ぬるい",roma:"",arti:"hangat"},
+    {jp:"音楽",read:"おんがく",roma:"",arti:"musik"},
+    {jp:"下",read:"した",roma:"",arti:"di bawah"},
+    {jp:"下手",read:"へた",roma:"",arti:"unskillful"},
+    {jp:"何",read:"なん/なに",roma:"",arti:"apa"},
+    {jp:"夏",read:"なつ",roma:"",arti:"musim panas"},
+    {jp:"家",read:"いえ",roma:"",arti:"rumah"},
+    {jp:"家族",read:"かぞく",roma:"",arti:"keluarga"},
+    {jp:"家庭",read:"かてい",roma:"",arti:"rumah tangga"},
+    {jp:"暇",read:"ひま",roma:"",arti:"waktu luang"},
+    {jp:"果物",read:"くだもの",roma:"",arti:"buah"},
+    {jp:"歌",read:"うた",roma:"",arti:"lagu"},
+    {jp:"花",read:"はな",roma:"",arti:"bunga"},
+    {jp:"花瓶",read:"かびん",roma:"",arti:"vas"},
+    {jp:"荷物",read:"にもつ",roma:"",arti:"bagasi"},
+    {jp:"会社",read:"かいしゃ",roma:"",arti:"perusahaan"},
+    {jp:"海",read:"うみ",roma:"",arti:"laut"},
+    {jp:"灰皿",read:"はいざら",roma:"",arti:"asbak"},
+    {jp:"絵",read:"え",roma:"",arti:"gambar"},
+    {jp:"階段",read:"かいだん",roma:"",arti:"stairs"},
+    {jp:"外",read:"そと",roma:"",arti:"luar"},
+    {jp:"外国",read:"がいこく",roma:"",arti:"luar negeri"},
+    {jp:"角",read:"かど",roma:"",arti:"sudut"},
+    {jp:"学校",read:"がっこう",roma:"",arti:"sekolah"},
+    {jp:"学生",read:"がくせい",roma:"",arti:"pelajar"},
+    {jp:"寒い",read:"さむい",roma:"",arti:"dingin"},
+    {jp:"漢字",read:"かんじ",roma:"",arti:"huruf Cina / kanji"},
+    {jp:"甘い",read:"あまい",roma:"",arti:"manis"},
+    {jp:"眼鏡",read:"めがね",roma:"",arti:"kacamata"},
+    {jp:"机",read:"つくえ",roma:"",arti:"meja"},
+    {jp:"休み",read:"やすみ",roma:"",arti:"istirahat"},
+    {jp:"牛肉",read:"ぎゅうにく",roma:"",arti:"daging sapi"},
+    {jp:"牛乳",read:"ぎゅうにゅう",roma:"",arti:"susu"},
+    {jp:"去年",read:"きょねん",roma:"",arti:"tahun lalu"},
+    {jp:"魚",read:"さかな",roma:"",arti:"ikan"},
+    {jp:"強い",read:"つよい",roma:"",arti:"kuat / berkuasa"},
+    {jp:"教室",read:"きょうしつ",roma:"",arti:"ruang kelas"},
+    {jp:"橋",read:"はし",roma:"",arti:"jembatan"},
+    {jp:"狭い",read:"せまい",roma:"",arti:"sempit"},
+    {jp:"近い",read:"ちかい",roma:"",arti:"dekat"},
+    {jp:"銀行",read:"ぎんこう",roma:"",arti:"bank"},
+    {jp:"九",read:"きゅう / く",roma:"",arti:"sembilan"},
+    {jp:"九日",read:"ここのか",roma:"",arti:"sembilan hari"},
+    {jp:"空",read:"そら",roma:"",arti:"langit"},
+    {jp:"靴",read:"くつ",roma:"",arti:"sepatu"},
+    {jp:"靴下",read:"くつした",roma:"",arti:"kaus kaki"},
+    {jp:"兄",read:"あに",roma:"",arti:"kakak laki-laki"},
+    {jp:"兄弟",read:"きょうだい",roma:"",arti:"siblings"},
+    {jp:"警官",read:"けいかん",roma:"",arti:"polisi"},
+    {jp:"軽い",read:"かるい",roma:"",arti:"ringan"},
+    {jp:"結構",read:"けっこう",roma:"",arti:"splendid"},
+    {jp:"結婚",read:"けっこん",roma:"",arti:"pernikahan"},
+    {jp:"嫌",read:"いや",roma:"",arti:"tidak menyenangkan"},
+    {jp:"嫌い",read:"きらい",roma:"",arti:"benci"},
+    {jp:"建物",read:"たてもの",roma:"",arti:"gedung"},
+    {jp:"犬",read:"いぬ",roma:"",arti:"anjing"},
+    {jp:"元気",read:"げんき",roma:"",arti:"kesehatan"},
+    {jp:"玄関",read:"げんかん",roma:"",arti:"ruang masuk"},
+    {jp:"言葉",read:"ことば",roma:"",arti:"kata"},
+    {jp:"古い",read:"ふるい",roma:"",arti:"lama"},
+    {jp:"戸",read:"と",roma:"",arti:"pintu gaya Jepang"},
+    {jp:"五",read:"ご",roma:"",arti:"lima"},
+    {jp:"五日",read:"いつか",roma:"",arti:"lima hari"},
+    {jp:"午後",read:"ごご",roma:"",arti:"siang"},
+    {jp:"午前",read:"ごぜん",roma:"",arti:"pagi"},
+    {jp:"後",read:"あと",roma:"",arti:"setelah itu"},
+    {jp:"後ろ",read:"うしろ",roma:"",arti:"di belakang"},
+    {jp:"御飯",read:"ごはん",roma:"",arti:"nasi"},
+    {jp:"交番",read:"こうばん",roma:"",arti:"pos polisi"},
+    {jp:"公園",read:"こうえん",roma:"",arti:"taman"},
+    {jp:"厚い",read:"あつい",roma:"",arti:"jenis"},
+    {jp:"口",read:"くち",roma:"",arti:"mulut"},
+    {jp:"好き",read:"すき",roma:"",arti:"likeable"},
+    {jp:"広い",read:"ひろい",roma:"",arti:"spacious"},
+    {jp:"紅茶",read:"こうちゃ",roma:"",arti:"teh hitam"},
+    {jp:"高い",read:"たかい",roma:"",arti:"tinggi"},
+    {jp:"国",read:"くに",roma:"",arti:"negara"},
+    {jp:"黒",read:"くろ",roma:"",arti:"hitam"},
+    {jp:"黒い",read:"くろい",roma:"",arti:"hitam"},
+    {jp:"今",read:"いま",roma:"",arti:"sekarang"},
+    {jp:"今月",read:"こんげつ",roma:"",arti:"bulan ini"},
+    {jp:"今週",read:"こんしゅう",roma:"",arti:"minggu ini"},
+    {jp:"今朝",read:"けさ",roma:"",arti:"pagi ini"},
+    {jp:"今日",read:"きょう",roma:"",arti:"hari ini"},
+    {jp:"今年",read:"ことし",roma:"",arti:"tahun ini"},
+    {jp:"今晩",read:"こんばん",roma:"",arti:"malam ini"},
+    {jp:"左",read:"ひだり",roma:"",arti:"sisi kiri"},
+    {jp:"砂糖",read:"さとう",roma:"",arti:"gula"},
+    {jp:"細い",read:"ほそい",roma:"",arti:"tipis"},
+    {jp:"財布",read:"さいふ",roma:"",arti:"dompet"},
+    {jp:"作文",read:"さくぶん",roma:"",arti:"composition"},
+    {jp:"昨日",read:"きのう",roma:"",arti:"kemarin"},
+    {jp:"昨夜",read:"ゆうべ",roma:"",arti:"semalam"},
+    {jp:"雑誌",read:"ざっし",roma:"",arti:"majalah"},
+    {jp:"三",read:"さん",roma:"",arti:"tiga"},
+    {jp:"三日",read:"みっか",roma:"",arti:"tiga hari"},
+    {jp:"傘",read:"かさ",roma:"",arti:"payung"},
+    {jp:"山",read:"やま",roma:"",arti:"gunung"},
+    {jp:"仕事",read:"しごと",roma:"",arti:"pekerjaan"},
+    {jp:"四",read:"し / よん",roma:"",arti:"empat"},
+    {jp:"四日",read:"よっか",roma:"",arti:"empat hari"},
+    {jp:"姉",read:"あね",roma:"",arti:"kakak perempuan"},
+    {jp:"子供",read:"こども",roma:"",arti:"anak"},
+    {jp:"私",read:"わたくし",roma:"",arti:"saya"},
+    {jp:"紙",read:"かみ",roma:"",arti:"kertas"},
+    {jp:"歯",read:"は",roma:"",arti:"gigi"},
+    {jp:"字引",read:"じびき",roma:"",arti:"kamus"},
+    {jp:"時々",read:"ときどき",roma:"",arti:"kadang"},
+    {jp:"時間",read:"じかん",roma:"",arti:"waktu"},
+    {jp:"時計",read:"とけい",roma:"",arti:"jam tangan"},
+    {jp:"次",read:"つぎ",roma:"",arti:"berikutnya"},
+    {jp:"耳",read:"みみ",roma:"",arti:"telinga"},
+    {jp:"自分",read:"じぶん",roma:"",arti:"oneself"},
+    {jp:"辞書",read:"じしょ",roma:"",arti:"kamus"},
+    {jp:"七",read:"しち / なな",roma:"",arti:"tujuh"},
+    {jp:"七日",read:"なのか",roma:"",arti:"tujuh hari"},
+    {jp:"質問",read:"しつもん",roma:"",arti:"pertanyaan"},
+    {jp:"写真",read:"しゃしん",roma:"",arti:"foto"},
+    {jp:"車",read:"くるま",roma:"",arti:"mobil"},
+    {jp:"若い",read:"わかい",roma:"",arti:"muda"},
+    {jp:"弱い",read:"よわい",roma:"",arti:"lemah"},
+    {jp:"手",read:"て",roma:"",arti:"tangan"},
+    {jp:"手紙",read:"てがみ",roma:"",arti:"surat"},
+    {jp:"授業",read:"じゅぎょう",roma:"",arti:"pelajaran"},
+    {jp:"秋",read:"あき",roma:"",arti:"musim gugur"},
+    {jp:"十",read:"じゅう とお",roma:"",arti:"sepuluh"},
+    {jp:"十日",read:"とおか",roma:"",arti:"sepuluh hari"},
+    {jp:"重い",read:"おもい",roma:"",arti:"berat"},
+    {jp:"宿題",read:"しゅくだい",roma:"",arti:"pekerjaan rumah"},
+    {jp:"出口",read:"でぐち",roma:"",arti:"pintu keluar"},
+    {jp:"春",read:"はる",roma:"",arti:"musim semi"},
+    {jp:"所",read:"ところ",roma:"",arti:"tempat"},
+    {jp:"暑い",read:"あつい",roma:"",arti:"panas"},
+    {jp:"女",read:"おんな",roma:"",arti:"perempuan"},
+    {jp:"少し",read:"すこし",roma:"",arti:"sedikit"},
+    {jp:"上",read:"うえ",roma:"",arti:"di atas"},
+    {jp:"上手",read:"じょうず",roma:"",arti:"pandai"},
+    {jp:"上着",read:"うわぎ",roma:"",arti:"jaket"},
+    {jp:"丈夫",read:"じょうぶ",roma:"",arti:"kuat"},
+    {jp:"色",read:"いろ",roma:"",arti:"colour"},
+    {jp:"食堂",read:"しょくどう",roma:"",arti:"ruang makan"},
+    {jp:"新聞",read:"しんぶん",roma:"",arti:"koran"},
+    {jp:"辛い",read:"からい",roma:"",arti:"pedas"},
+    {jp:"人",read:"ひと",roma:"",arti:"orang"},
+    {jp:"水",read:"みず",roma:"",arti:"udara"},
+    {jp:"晴れ",read:"はれ",roma:"",arti:"cuaca cerah"},
+    {jp:"生徒",read:"せいと",roma:"",arti:"murid"},
+    {jp:"声",read:"こえ",roma:"",arti:"suara"},
+    {jp:"西",read:"にし",roma:"",arti:"barat"},
+    {jp:"青",read:"あお",roma:"",arti:"biru"},
+    {jp:"青い",read:"あおい",roma:"",arti:"biru"},
+    {jp:"静か",read:"しずか",roma:"",arti:"sepi"},
+    {jp:"赤",read:"あか",roma:"",arti:"merah"},
+    {jp:"赤い",read:"あかい",roma:"",arti:"merah"},
+    {jp:"切手",read:"きって",roma:"",arti:"perangko"},
+    {jp:"切符",read:"きっぷ",roma:"",arti:"tiket"},
+    {jp:"雪",read:"ゆき",roma:"",arti:"salju"},
+    {jp:"先",read:"さき",roma:"",arti:"masa depan"},
+    {jp:"先月",read:"せんげつ",roma:"",arti:"bulan lalu"},
+    {jp:"先週",read:"せんしゅう",roma:"",arti:"minggu lalu"},
+    {jp:"先生",read:"せんせい",roma:"",arti:"guru"},
+    {jp:"千",read:"せん",roma:"",arti:"seribu"},
+    {jp:"洗濯",read:"せんたく",roma:"",arti:"washing"},
+    {jp:"前",read:"まえ",roma:"",arti:"sebelum"},
+    {jp:"全部",read:"ぜんぶ",roma:"",arti:"semua"},
+    {jp:"早い",read:"はやい",roma:"",arti:"pagi"},
+    {jp:"窓",read:"まど",roma:"",arti:"jendela"},
+    {jp:"足",read:"あし",roma:"",arti:"kaki"},
+    {jp:"速い",read:"はやい",roma:"",arti:"cepat"},
+    {jp:"村",read:"むら",roma:"",arti:"desa"},
+    {jp:"多い",read:"おおい",roma:"",arti:"banyak"},
+    {jp:"太い",read:"ふとい",roma:"",arti:"lemak"},
+    {jp:"体",read:"からだ",roma:"",arti:"badan"},
+    {jp:"台所",read:"だいどころ",roma:"",arti:"dapur"},
+    {jp:"大学",read:"だいがく",roma:"",arti:"universitas"},
+    {jp:"大人",read:"おとな",roma:"",arti:"dewasa"},
+    {jp:"大勢",read:"おおぜい",roma:"",arti:"great number of people"},
+    {jp:"大切",read:"たいせつ",roma:"",arti:"penting"},
+    {jp:"誰",read:"だれ",roma:"",arti:"siapa"},
+    {jp:"短い",read:"みじかい",roma:"",arti:"pendek"},
+    {jp:"男",read:"おとこ",roma:"",arti:"laki-laki"},
+    {jp:"地図",read:"ちず",roma:"",arti:"peta"},
+    {jp:"池",read:"いけ",roma:"",arti:"kolam"},
+    {jp:"遅い",read:"おそい",roma:"",arti:"terlambat"},
+    {jp:"茶色",read:"ちゃいろ",roma:"",arti:"coklat"},
+    {jp:"中",read:"なか",roma:"",arti:"tengah"},
+    {jp:"昼",read:"ひる",roma:"",arti:"siang"},
+    {jp:"朝",read:"あさ",roma:"",arti:"pagi"},
+    {jp:"町",read:"まち",roma:"",arti:"kota"},
+    {jp:"長い",read:"ながい",roma:"",arti:"panjang"},
+    {jp:"鳥",read:"とり",roma:"",arti:"burung"},
+    {jp:"痛い",read:"いたい",roma:"",arti:"sakit"},
+    {jp:"低い",read:"ひくい",roma:"",arti:"pendek"},
+    {jp:"庭",read:"にわ",roma:"",arti:"taman"},
+    {jp:"弟",read:"おとうと",roma:"",arti:"adik laki-laki"},
+    {jp:"天気",read:"てんき",roma:"",arti:"cuaca"},
+    {jp:"店",read:"みせ",roma:"",arti:"toko"},
+    {jp:"電気",read:"でんき",roma:"",arti:"listrik"},
+    {jp:"電車",read:"でんしゃ",roma:"",arti:"kereta listrik"},
+    {jp:"電話",read:"でんわ",roma:"",arti:"telepon"},
+    {jp:"冬",read:"ふゆ",roma:"",arti:"musim dingin"},
+    {jp:"東",read:"ひがし",roma:"",arti:"timur"},
+    {jp:"頭",read:"あたま",roma:"",arti:"kepala"},
+    {jp:"動物",read:"どうぶつ",roma:"",arti:"hewan"},
+    {jp:"同じ",read:"おなじ",roma:"",arti:"sama"},
+    {jp:"道",read:"みち",roma:"",arti:"jalan"},
+    {jp:"豚肉",read:"ぶたにく",roma:"",arti:"daging babi"},
+    {jp:"曇り",read:"くもり",roma:"",arti:"cuaca mendung"},
+    {jp:"南",read:"みなみ",roma:"",arti:"selatan"},
+    {jp:"二",read:"に",roma:"",arti:"dua"},
+    {jp:"二人",read:"ふたり",roma:"",arti:"dua orang"},
+    {jp:"二日",read:"ふつか",roma:"",arti:"dua hari"},
+    {jp:"肉",read:"にく",roma:"",arti:"daging"},
+    {jp:"入口",read:"いりぐち",roma:"",arti:"pintu masuk"},
+    {jp:"猫",read:"ねこ",roma:"",arti:"kucing"},
+    {jp:"熱い",read:"あつい",roma:"",arti:"panas (saat disentuh)"},
+    {jp:"年",read:"とし",roma:"",arti:"tahun"},
+    {jp:"背",read:"せ",roma:"",arti:"tinggi"},
+    {jp:"背広",read:"せびろ",roma:"",arti:"setelan kerja"},
+    {jp:"白",read:"しろ",roma:"",arti:"putih"},
+    {jp:"白い",read:"しろい",roma:"",arti:"putih"},
+    {jp:"薄い",read:"うすい",roma:"",arti:"tipis"},
+    {jp:"箱",read:"はこ",roma:"",arti:"kotak"},
+    {jp:"八",read:"はち",roma:"",arti:"delapan"},
+    {jp:"八日",read:"ようか",roma:"",arti:"delapan hari"},
+    {jp:"半",read:"はん",roma:"",arti:"setengah"},
+    {jp:"半分",read:"はんぶん",roma:"",arti:"half minute"},
+    {jp:"煩い",read:"うるさい",roma:"",arti:"berisik"},
+    {jp:"晩",read:"ばん",roma:"",arti:"sore"},
+    {jp:"番号",read:"ばんごう",roma:"",arti:"nomor"},
+    {jp:"鼻",read:"はな",roma:"",arti:"hidung"},
+    {jp:"百",read:"ひゃく",roma:"",arti:"seratus"},
+    {jp:"病院",read:"びょういん",roma:"",arti:"rumah sakit"},
+    {jp:"病気",read:"びょうき",roma:"",arti:"penyakit"},
+    {jp:"部屋",read:"へや",roma:"",arti:"kamar"},
+    {jp:"封筒",read:"ふうとう",roma:"",arti:"amplop"},
+    {jp:"風",read:"かぜ",roma:"",arti:"angin"},
+    {jp:"風邪",read:"かぜ",roma:"",arti:"pilek"},
+    {jp:"服",read:"ふく",roma:"",arti:"pakaian"},
+    {jp:"物",read:"もの",roma:"",arti:"benda"},
+    {jp:"文章",read:"ぶんしょう",roma:"",arti:"kalimat"},
+    {jp:"辺",read:"へん",roma:"",arti:"daerah"},
+    {jp:"便利",read:"べんり",roma:"",arti:"berguna"},
+    {jp:"方",read:"かた",roma:"",arti:"orang"},
+    {jp:"帽子",read:"ぼうし",roma:"",arti:"topi"},
+    {jp:"北",read:"きた",roma:"",arti:"utara"},
+    {jp:"本",read:"ほん",roma:"",arti:"buku"},
+    {jp:"本棚",read:"ほんだな",roma:"",arti:"bookshelves"},
+    {jp:"妹",read:"いもうと",roma:"",arti:"adik perempuan"},
+    {jp:"毎月",read:"まいげつ/まいつき",roma:"",arti:"setiap bulan"},
+    {jp:"毎週",read:"まいしゅう",roma:"",arti:"setiap minggu"},
+    {jp:"毎朝",read:"まいあさ",roma:"",arti:"setiap pagi"},
+    {jp:"毎日",read:"まいにち",roma:"",arti:"setiap hari"},
+    {jp:"毎年",read:"まいねん/まいとし",roma:"",arti:"setiap tahun"},
+    {jp:"毎晩",read:"まいばん",roma:"",arti:"setiap malam"},
+    {jp:"万",read:"まん",roma:"",arti:"sepuluh ribu"},
+    {jp:"名前",read:"なまえ",roma:"",arti:"nama"},
+    {jp:"明い",read:"あかるい",roma:"",arti:"terang"},
+    {jp:"明日",read:"あした",roma:"",arti:"besok"},
+    {jp:"木",read:"き",roma:"",arti:"pohon"},
+    {jp:"目",read:"め",roma:"",arti:"mata"},
+    {jp:"問題",read:"もんだい",roma:"",arti:"masalah"},
+    {jp:"門",read:"もん",roma:"",arti:"gerbang"},
+    {jp:"夜",read:"よる",roma:"",arti:"sore"},
+    {jp:"野菜",read:"やさい",roma:"",arti:"sayuran"},
+    {jp:"薬",read:"くすり",roma:"",arti:"obat"},
+    {jp:"友達",read:"ともだち",roma:"",arti:"teman"},
+    {jp:"有名",read:"ゆうめい",roma:"",arti:"terkenal"},
+    {jp:"夕飯",read:"ゆうはん",roma:"",arti:"makan malam"},
+    {jp:"夕方",read:"ゆうがた",roma:"",arti:"sore"},
+    {jp:"洋服",read:"ようふく",roma:"",arti:"western-style clothes"},
+    {jp:"葉書",read:"はがき",roma:"",arti:"postcard"},
+    {jp:"来月",read:"らいげつ",roma:"",arti:"bulan depan"},
+    {jp:"来週",read:"らいしゅう",roma:"",arti:"minggu depan"},
+    {jp:"来年",read:"らいねん",roma:"",arti:"tahun depan"},
+    {jp:"卵",read:"たまご",roma:"",arti:"telur"},
+    {jp:"旅行",read:"りょこう",roma:"",arti:"perjalanan"},
+    {jp:"両親",read:"りょうしん",roma:"",arti:"both parents"},
+    {jp:"料理",read:"りょうり",roma:"",arti:"masakan"},
+    {jp:"緑",read:"みどり",roma:"",arti:"hijau"},
+    {jp:"隣",read:"となり",roma:"",arti:"di sebelah"},
+    {jp:"零",read:"れい",roma:"",arti:"zero"},
+    {jp:"廊下",read:"ろうか",roma:"",arti:"koridor"},
+    {jp:"六",read:"ろく",roma:"",arti:"enam"},
+    {jp:"六日",read:"むいか",roma:"",arti:"enam hari"},
+    {jp:"話",read:"はなし",roma:"",arti:"pembicaraan"}
+  ]
+  },
+  N4: {
+  "Kata Benda":[
+    {jp:"あかちゃん",read:"あかちゃん",roma:"",arti:"infant"},
+    {jp:"アクセサリー",read:"アクセサリー",roma:"",arti:"aksesori"},
+    {jp:"アジア",read:"アジア",roma:"",arti:"Asia"},
+    {jp:"アナウンサー",read:"アナウンサー",roma:"",arti:"penyiar"},
+    {jp:"アフリカ",read:"アフリカ",roma:"",arti:"Afrika"},
+    {jp:"アメリカ",read:"アメリカ",roma:"",arti:"amerika"},
+    {jp:"アルコール",read:"アルコール",roma:"",arti:"alkohol"},
+    {jp:"アルバイト",read:"アルバイト",roma:"",arti:"part-time job"},
+    {jp:"あんな",read:"あんな",roma:"",arti:"seperti itu"},
+    {jp:"いっぱい",read:"いっぱい",roma:"",arti:"penuh"},
+    {jp:"うまい",read:"うまい",roma:"",arti:"enak"},
+    {jp:"エスカレーター",read:"エスカレーター",roma:"",arti:"eskalator"},
+    {jp:"オートバイ",read:"オートバイ",roma:"",arti:"sepeda motor"},
+    {jp:"おかげ",read:"おかげ",roma:"",arti:"owing to"},
+    {jp:"おつり",read:"おつり",roma:"",arti:"change from purchase"},
+    {jp:"おもちゃ",read:"おもちゃ",roma:"",arti:"mainan"},
+    {jp:"お金持ち",read:"かねもち/おかねもち",roma:"",arti:"rich man"},
+    {jp:"お見舞い",read:"おみまい",roma:"",arti:"calling on someone who is ill"},
+    {jp:"お祭り",read:"おまつり",roma:"",arti:"festival"},
+    {jp:"お祝い",read:"おいわい",roma:"",arti:"congratulation"},
+    {jp:"お嬢さん",read:"おじょうさん",roma:"",arti:"young lady"},
+    {jp:"お土産",read:"おみやげ",roma:"",arti:"oleh-oleh"},
+    {jp:"カーテン",read:"カーテン",roma:"",arti:"tirai"},
+    {jp:"ガソリン",read:"ガソリン",roma:"",arti:"petrol"},
+    {jp:"ガソリンスタンド",read:"ガソリンスタンド",roma:"",arti:"petrol station"},
+    {jp:"ガラス",read:"ガラス",roma:"",arti:"kaca jendela"},
+    {jp:"きっと",read:"きっと",roma:"",arti:"pasti"},
+    {jp:"ケーキ",read:"ケーキ",roma:"",arti:"kue"},
+    {jp:"けれど/けれども",read:"けれど/けれども",roma:"",arti:"however"},
+    {jp:"このあいだ",read:"このあいだ",roma:"",arti:"baru-baru ini"},
+    {jp:"このごろ",read:"このごろ",roma:"",arti:"akhir-akhir ini"},
+    {jp:"これから",read:"これから",roma:"",arti:"setelah ini"},
+    {jp:"コンサート",read:"コンサート",roma:"",arti:"konser"},
+    {jp:"コンピュータ/コンピューター",read:"コンピュータ/コンピューター",roma:"",arti:"komputer"},
+    {jp:"ご存じ",read:"ごぞんじ",roma:"",arti:"knowing"},
+    {jp:"さっき",read:"さっき",roma:"",arti:"some time ago"},
+    {jp:"サラダ",read:"サラダ",roma:"",arti:"salad"},
+    {jp:"サンダル",read:"サンダル",roma:"",arti:"sandal"},
+    {jp:"サンドイッチ",read:"サンドイッチ",roma:"",arti:"roti lapis"},
+    {jp:"さ来月",read:"さらいげつ",roma:"",arti:"dua bulan lagi"},
+    {jp:"さ来週",read:"さらいしゅう",roma:"",arti:"dua minggu lagi"},
+    {jp:"しっかり",read:"しっかり",roma:"",arti:"firmly"},
+    {jp:"じゃま",read:"じゃま",roma:"",arti:"hindrance"},
+    {jp:"ジャム",read:"ジャム",roma:"",arti:"selai / kemacetan"},
+    {jp:"ずいぶん",read:"ずいぶん",roma:"",arti:"sangat / amat"},
+    {jp:"スーツ",read:"スーツ",roma:"",arti:"setelan"},
+    {jp:"スーツケース",read:"スーツケース",roma:"",arti:"koper"},
+    {jp:"スクリーン",read:"スクリーン",roma:"",arti:"layar"},
+    {jp:"すっかり",read:"すっかり",roma:"",arti:"completely"},
+    {jp:"すっと",read:"すっと",roma:"",arti:"lurus"},
+    {jp:"ステーキ",read:"ステーキ",roma:"",arti:"steak"},
+    {jp:"ステレオ",read:"ステレオ",roma:"",arti:"stereo"},
+    {jp:"すると",read:"すると",roma:"",arti:"kemudian"},
+    {jp:"ぜんぜん",read:"ぜんぜん",roma:"",arti:"not entirely"},
+    {jp:"ソフト",read:"ソフト",roma:"",arti:"lembut"},
+    {jp:"それで",read:"それで",roma:"",arti:"karena itu"},
+    {jp:"それに",read:"それに",roma:"",arti:"moreover"},
+    {jp:"そろそろ",read:"そろそろ",roma:"",arti:"perlahan"},
+    {jp:"そんな",read:"そんな",roma:"",arti:"seperti itu"},
+    {jp:"そんなに",read:"そんなに",roma:"",arti:"so much"},
+    {jp:"たいてい",read:"たいてい",roma:"",arti:"biasanya"},
+    {jp:"タイプ",read:"タイプ",roma:"",arti:"jenis"},
+    {jp:"だから",read:"だから",roma:"",arti:"so"},
+    {jp:"たまに",read:"たまに",roma:"",arti:"occasionally"},
+    {jp:"ちっとも",read:"ちっとも",roma:"",arti:"not at all"},
+    {jp:"ちゃん",read:"ちゃん",roma:"",arti:"akhiran untuk wanita (akrab)"},
+    {jp:"つもり",read:"つもり",roma:"",arti:"niat"},
+    {jp:"テキスト",read:"テキスト",roma:"",arti:"teks"},
+    {jp:"できるだけ",read:"できるだけ",roma:"",arti:"sebisa mungkin"},
+    {jp:"テニス",read:"テニス",roma:"",arti:"tenis"},
+    {jp:"とこや",read:"とこや",roma:"",arti:"tukang cukur"},
+    {jp:"どんどん",read:"どんどん",roma:"",arti:"more and more"},
+    {jp:"なるほど",read:"なるほど",roma:"",arti:"now I understand"},
+    {jp:"におい",read:"におい",roma:"",arti:"bau"},
+    {jp:"ねだん",read:"ねだん",roma:"",arti:"harga"},
+    {jp:"ねっしん",read:"ねっしん",roma:"",arti:"enthusiasm"},
+    {jp:"パート",read:"パート",roma:"",arti:"paruh waktu"},
+    {jp:"パソコン",read:"パソコン",roma:"",arti:"personal computer"},
+    {jp:"はっきり",read:"はっきり",roma:"",arti:"jelas"},
+    {jp:"ハンドバッグ",read:"ハンドバッグ",roma:"",arti:"handbag"},
+    {jp:"ピアノ",read:"ピアノ",roma:"",arti:"piano"},
+    {jp:"ひどい",read:"ひどい",roma:"",arti:"mengerikan"},
+    {jp:"ファックス",read:"ファックス",roma:"",arti:"fax"},
+    {jp:"プレゼント",read:"プレゼント",roma:"",arti:"masa kini"},
+    {jp:"ほとんど",read:"ほとんど",roma:"",arti:"mostly"},
+    {jp:"まじめ",read:"まじめ",roma:"",arti:"serious"},
+    {jp:"または",read:"または",roma:"",arti:"atau"},
+    {jp:"もちろん",read:"もちろん",roma:"",arti:"tentu"},
+    {jp:"もっとも",read:"もっとも",roma:"",arti:"sangat / amat"},
+    {jp:"やっと",read:"やっと",roma:"",arti:"akhirnya"},
+    {jp:"やはり/やっぱり",read:"やはり/やっぱり",roma:"",arti:"seperti yang kupikirkan"},
+    {jp:"レポート/リポート",read:"レポート/リポート",roma:"",arti:"laporan"},
+    {jp:"ワープロ",read:"ワープロ",roma:"",arti:"word processor"},
+    {jp:"一生懸命",read:"いっしょうけんめい",roma:"",arti:"dengan sekuat tenaga"},
+    {jp:"引き出し",read:"ひきだし",roma:"",arti:"laci"},
+    {jp:"運転手",read:"うんてんしゅ",roma:"",arti:"pengemudi"},
+    {jp:"泳ぎ方",read:"およぎかた",roma:"",arti:"way of swimming"},
+    {jp:"押し入れ",read:"おしいれ",roma:"",arti:"lemari"},
+    {jp:"会議室",read:"かいぎしつ",roma:"",arti:"ruang rapat"},
+    {jp:"楽しみ",read:"たのしみ",roma:"",arti:"kegembiraan"},
+    {jp:"看護婦",read:"かんごふ",roma:"",arti:"female nurse"},
+    {jp:"気持ち",read:"きもち",roma:"",arti:"perasaan"},
+    {jp:"久しぶり",read:"ひさしぶり",roma:"",arti:"setelah lama"},
+    {jp:"決して",read:"けっして",roma:"",arti:"tidak pernah"},
+    {jp:"堅/硬/固い",read:"かたい",roma:"",arti:"sulit"},
+    {jp:"研究室",read:"けんきゅうしつ",roma:"",arti:"ruang belajar"},
+    {jp:"御主人",read:"ごしゅじん",roma:"",arti:"suami anda"},
+    {jp:"公務員",read:"こうむいん",roma:"",arti:"government worker"},
+    {jp:"高校生",read:"こうこうせい",roma:"",arti:"siswa SMA"},
+    {jp:"高等学校",read:"こうとうがっこう",roma:"",arti:"SMA"},
+    {jp:"細かい",read:"こまかい",roma:"",arti:"kecil"},
+    {jp:"歯医者",read:"はいしゃ",roma:"",arti:"dokter gigi"},
+    {jp:"事務所",read:"じむしょ",roma:"",arti:"kantor"},
+    {jp:"終わり",read:"おわり",roma:"",arti:"akhir"},
+    {jp:"柔らかい",read:"やわらかい",roma:"",arti:"lembut"},
+    {jp:"小学校",read:"しょうがっこう",roma:"",arti:"SD"},
+    {jp:"消しゴム",read:"けしゴム",roma:"",arti:"eraser"},
+    {jp:"乗り物",read:"のりもの",roma:"",arti:"kendaraan"},
+    {jp:"食料品",read:"しょくりょうひん",roma:"",arti:"bahan makanan"},
+    {jp:"新聞社",read:"しんぶんしゃ",roma:"",arti:"newspaper company"},
+    {jp:"赤ん坊",read:"あかんぼう",roma:"",arti:"bayi"},
+    {jp:"贈り物",read:"おくりもの",roma:"",arti:"hadiah"},
+    {jp:"代わり",read:"かわり",roma:"",arti:"pengganti"},
+    {jp:"大学生",read:"だいがくせい",roma:"",arti:"mahasiswa"},
+    {jp:"中学校",read:"ちゅうがっこう",roma:"",arti:"SMP"},
+    {jp:"昼休み",read:"ひるやすみ",roma:"",arti:"noon break"},
+    {jp:"駐車場",read:"ちゅうしゃじょう",roma:"",arti:"tempat parkir"},
+    {jp:"天気予報",read:"てんきよほう",roma:"",arti:"prakiraan cuaca"},
+    {jp:"展覧会",read:"てんらんかい",roma:"",arti:"exhibition"},
+    {jp:"動物園",read:"どうぶつえん",roma:"",arti:"zoo"},
+    {jp:"二階建て",read:"にかいだて",roma:"",arti:"two storied"},
+    {jp:"売り場",read:"うりば",roma:"",arti:"place where things are sold"},
+    {jp:"非常に",read:"ひじょうに",roma:"",arti:"sangat / amat"},
+    {jp:"飛行場",read:"ひこうじょう",roma:"",arti:"bandara"},
+    {jp:"美術館",read:"びじゅつかん",roma:"",arti:"galeri seni"},
+    {jp:"忘れ物",read:"わすれもの",roma:"",arti:"lost article"},
+    {jp:"例えば",read:"たとえば",roma:"",arti:"contohnya"}
+  ],
+  "Kata Kerja":[
+    {jp:"あいさつする",read:"あいさつする",roma:"",arti:"menyapa"},
+    {jp:"あげる",read:"あげる",roma:"",arti:"memberi"},
+    {jp:"いじめる",read:"いじめる",roma:"",arti:"menggoda"},
+    {jp:"いただく",read:"いただく",roma:"",arti:"menerima"},
+    {jp:"いらっしゃる",read:"いらっしゃる",roma:"",arti:"ada / menjadi"},
+    {jp:"うかがう",read:"うかがう",roma:"",arti:"mengunjungi"},
+    {jp:"おいでになる",read:"おいでになる",roma:"",arti:"ada / menjadi"},
+    {jp:"おっしゃる",read:"おっしゃる",roma:"",arti:"berkata"},
+    {jp:"かっこう",read:"かっこう",roma:"",arti:"penampilan"},
+    {jp:"かまう",read:"かまう",roma:"",arti:"keberatan"},
+    {jp:"くださる",read:"くださる",roma:"",arti:"memberi"},
+    {jp:"くれる",read:"くれる",roma:"",arti:"memberi"},
+    {jp:"けがする",read:"けがする",roma:"",arti:"melukai"},
+    {jp:"けんかする",read:"けんかする",roma:"",arti:"bertengkar"},
+    {jp:"こう",read:"こう",roma:"",arti:"cara ini / ke sini"},
+    {jp:"ごちそう",read:"ごちそう",roma:"",arti:"pesta makan"},
+    {jp:"ごらんになる",read:"ごらんになる",roma:"",arti:"melihat"},
+    {jp:"しかる",read:"しかる",roma:"",arti:"tertentu"},
+    {jp:"しばらく",read:"しばらく",roma:"",arti:"little while"},
+    {jp:"すく",read:"すく",roma:"",arti:"menjadi kosong"},
+    {jp:"そう",read:"そう",roma:"",arti:"benar"},
+    {jp:"それほど",read:"それほど",roma:"",arti:"sampai sejauh itu"},
+    {jp:"チェックする",read:"チェックする",roma:"",arti:"memeriksa"},
+    {jp:"とうとう",read:"とうとう",roma:"",arti:"pada akhirnya"},
+    {jp:"なさる",read:"なさる",roma:"",arti:"melakukan"},
+    {jp:"なるべく",read:"なるべく",roma:"",arti:"sebisa mungkin"},
+    {jp:"ぬれる",read:"ぬれる",roma:"",arti:"basah"},
+    {jp:"びっくりする",read:"びっくりする",roma:"",arti:"ada / menjadi"},
+    {jp:"ぶどう",read:"ぶどう",roma:"",arti:"anggur"},
+    {jp:"ほめる",read:"ほめる",roma:"",arti:"memuji"},
+    {jp:"もうすぐ",read:"もうすぐ",roma:"",arti:"segera"},
+    {jp:"もらう",read:"もらう",roma:"",arti:"menerima"},
+    {jp:"案内",read:"あんないする",roma:"",arti:"pemandu"},
+    {jp:"移る",read:"うつる",roma:"",arti:"pindah rumah / pindah"},
+    {jp:"育てる",read:"そだてる",roma:"",arti:"memelihara"},
+    {jp:"引き出す",read:"ひきだす",roma:"",arti:"menarik / menarik diri"},
+    {jp:"引っ越す",read:"ひっこす",roma:"",arti:"pindah rumah"},
+    {jp:"運ぶ",read:"はこぶ",roma:"",arti:"mengangkut"},
+    {jp:"運転",read:"うんてんする",roma:"",arti:"mengemudi"},
+    {jp:"運動",read:"うんどうする",roma:"",arti:"olahraga"},
+    {jp:"遠く",read:"とおく",roma:"",arti:"jauh"},
+    {jp:"遠慮",read:"えんりょする",roma:"",arti:"ada / menjadi"},
+    {jp:"汚れる",read:"よごれる",roma:"",arti:"kotor"},
+    {jp:"下げる",read:"さげる",roma:"",arti:"menggantung"},
+    {jp:"下りる",read:"おりる",roma:"",arti:"turun"},
+    {jp:"下る",read:"さがる",roma:"",arti:"turun"},
+    {jp:"過ぎる",read:"すぎる",roma:"",arti:"melebihi"},
+    {jp:"回る",read:"まわる",roma:"",arti:"berkeliling"},
+    {jp:"壊す",read:"こわす",roma:"",arti:"mematahkan"},
+    {jp:"壊れる",read:"こわれる",roma:"",arti:"ada / menjadi"},
+    {jp:"開く",read:"ひらく",roma:"",arti:"membuka acara"},
+    {jp:"楽む",read:"たのしむ",roma:"",arti:"bersenang-senang"},
+    {jp:"掛ける",read:"かける",roma:"",arti:"menggantung sesuatu"},
+    {jp:"割れる",read:"われる",roma:"",arti:"mematahkan"},
+    {jp:"滑る",read:"すべる",roma:"",arti:"meluncur"},
+    {jp:"噛む",read:"かむ",roma:"",arti:"menggigit"},
+    {jp:"乾く",read:"かわく",roma:"",arti:"kering"},
+    {jp:"慣れる",read:"なれる",roma:"",arti:"terbiasa dengan"},
+    {jp:"間に合う",read:"まにあう",roma:"",arti:"ada / menjadi"},
+    {jp:"間違える",read:"まちがえる",roma:"",arti:"membuat kesalahan"},
+    {jp:"喜ぶ",read:"よろこぶ",roma:"",arti:"ada / menjadi"},
+    {jp:"寄る",read:"よる",roma:"",arti:"mengunjungi"},
+    {jp:"祈る",read:"いのる",roma:"",arti:"berdoa"},
+    {jp:"起す",read:"おこす",roma:"",arti:"bangun"},
+    {jp:"急ぐ",read:"いそぐ",roma:"",arti:"terburu-buru"},
+    {jp:"泣く",read:"なく",roma:"",arti:"menangis"},
+    {jp:"驚く",read:"おどろく",roma:"",arti:"ada / menjadi"},
+    {jp:"空く",read:"あく",roma:"",arti:"membuka"},
+    {jp:"経験",read:"けいけんする",roma:"",arti:"mengalami"},
+    {jp:"計画",read:"けいかくする",roma:"",arti:"rencana"},
+    {jp:"迎える",read:"むかえる",roma:"",arti:"keluar"},
+    {jp:"決める",read:"きめる",roma:"",arti:"memutuskan"},
+    {jp:"決る",read:"きまる",roma:"",arti:"ada / menjadi"},
+    {jp:"建てる",read:"たてる",roma:"",arti:"membangun"},
+    {jp:"見える",read:"みえる",roma:"",arti:"ada / menjadi"},
+    {jp:"見つかる",read:"みつかる",roma:"",arti:"ada / menjadi"},
+    {jp:"見つける",read:"みつける",roma:"",arti:"menemukan"},
+    {jp:"故障",read:"こしょうする",roma:"",arti:"rusak"},
+    {jp:"光る",read:"ひかる",roma:"",arti:"bersinar"},
+    {jp:"向かう",read:"むかう",roma:"",arti:"wajah"},
+    {jp:"考える",read:"かんがえる",roma:"",arti:"mempertimbangkan"},
+    {jp:"行う",read:"おこなう",roma:"",arti:"melakukan"},
+    {jp:"降り出す",read:"ふりだす",roma:"",arti:"mulai hujan"},
+    {jp:"合う",read:"あう",roma:"",arti:"pertandingan"},
+    {jp:"込む",read:"こむ",roma:"",arti:"ada / menjadi"},
+    {jp:"差し上げる",read:"さしあげる",roma:"",arti:"memberi"},
+    {jp:"済む",read:"すむ",roma:"",arti:"selesai"},
+    {jp:"参る",read:"まいる",roma:"",arti:"pergi"},
+    {jp:"残る",read:"のこる",roma:"",arti:"tersisa"},
+    {jp:"始める",read:"はじめる",roma:"",arti:"memulai"},
+    {jp:"思い出す",read:"おもいだす",roma:"",arti:"mengingat"},
+    {jp:"思う",read:"おもう",roma:"",arti:"memikirkan"},
+    {jp:"支度",read:"したくする",roma:"",arti:"menyiapkan"},
+    {jp:"止む",read:"やむ",roma:"",arti:"berhenti"},
+    {jp:"止める",read:"とめる",roma:"",arti:"menghentikan sesuatu"},
+    {jp:"似る",read:"にる",roma:"",arti:"ada / menjadi"},
+    {jp:"治る",read:"なおる",roma:"",arti:"ada / menjadi"},
+    {jp:"写す",read:"うつす",roma:"",arti:"menyalin / memotret"},
+    {jp:"捨てる",read:"すてる",roma:"",arti:"membuang"},
+    {jp:"謝る",read:"あやまる",roma:"",arti:"minta maaf"},
+    {jp:"取り替える",read:"とりかえる",roma:"",arti:"menukar"},
+    {jp:"手伝う",read:"てつだう",roma:"",arti:"membantu"},
+    {jp:"受ける",read:"うける",roma:"",arti:"mengikuti pelajaran / ujian"},
+    {jp:"拾う",read:"ひろう",roma:"",arti:"mengambil"},
+    {jp:"集める",read:"あつめる",roma:"",arti:"mengumpulkan sesuatu"},
+    {jp:"集る",read:"あつまる",roma:"",arti:"berkumpul"},
+    {jp:"出席",read:"しゅっせきする",roma:"",arti:"menghadiri"},
+    {jp:"出発",read:"しゅっぱつする",roma:"",arti:"berangkat"},
+    {jp:"準備",read:"じゅんびする",roma:"",arti:"menyiapkan"},
+    {jp:"勝つ",read:"かつ",roma:"",arti:"menang"},
+    {jp:"召し上がる",read:"めしあがる",roma:"",arti:"makan"},
+    {jp:"承知",read:"しょうちする",roma:"",arti:"menyetujui"},
+    {jp:"招待",read:"しょうたいする",roma:"",arti:"mengundang"},
+    {jp:"焼く",read:"やく",roma:"",arti:"memanggang"},
+    {jp:"焼ける",read:"やける",roma:"",arti:"membakar"},
+    {jp:"笑う",read:"わらう",roma:"",arti:"tertawa"},
+    {jp:"上る",read:"あがる",roma:"",arti:"naik"},
+    {jp:"乗り換える",read:"のりかえる",roma:"",arti:"pindah bus / kereta"},
+    {jp:"飾る",read:"かざる",roma:"",arti:"menghias"},
+    {jp:"植える",read:"うえる",roma:"",arti:"tanaman"},
+    {jp:"触る",read:"さわる",roma:"",arti:"menyentuh"},
+    {jp:"食事",read:"しょくじする",roma:"",arti:"makan"},
+    {jp:"心配",read:"しんぱいする",roma:"",arti:"kekhawatiran"},
+    {jp:"申し上げる",read:"もうしあげる",roma:"",arti:"berkata"},
+    {jp:"申す",read:"もうす",roma:"",arti:"ada / menjadi"},
+    {jp:"進む",read:"すすむ",roma:"",arti:"berkemajuan"},
+    {jp:"尋ねる",read:"たずねる",roma:"",arti:"bertanya"},
+    {jp:"世話",read:"せわする",roma:"",arti:"terlihat"},
+    {jp:"生きる",read:"いきる",roma:"",arti:"tinggal"},
+    {jp:"生活",read:"せいかつする",roma:"",arti:"tinggal"},
+    {jp:"生産",read:"せいさんする",roma:"",arti:"memproduksi"},
+    {jp:"折る",read:"おる",roma:"",arti:"mematahkan / melipat"},
+    {jp:"折れる",read:"おれる",roma:"",arti:"patah / terlipat"},
+    {jp:"選ぶ",read:"えらぶ",roma:"",arti:"memilih"},
+    {jp:"痩せる",read:"やせる",roma:"",arti:"menjadi"},
+    {jp:"相談",read:"そうだんする",roma:"",arti:"mendiskusikan"},
+    {jp:"送る",read:"おくる",roma:"",arti:"mengirim"},
+    {jp:"騒ぐ",read:"さわぐ",roma:"",arti:"membuat keributan"},
+    {jp:"増える",read:"ふえる",roma:"",arti:"bertambah"},
+    {jp:"足す",read:"たす",roma:"",arti:"menambah angka"},
+    {jp:"足りる",read:"たりる",roma:"",arti:"cukup"},
+    {jp:"続く",read:"つづく",roma:"",arti:"ada / menjadi"},
+    {jp:"続ける",read:"つづける",roma:"",arti:"melanjutkan"},
+    {jp:"太る",read:"ふとる",roma:"",arti:"menjadi"},
+    {jp:"打つ",read:"うつ",roma:"",arti:"memukul"},
+    {jp:"退院",read:"たいいんする",roma:"",arti:"keluar dari rumah sakit"},
+    {jp:"探す",read:"さがす",roma:"",arti:"mencari"},
+    {jp:"知らせる",read:"しらせる",roma:"",arti:"memberitahu"},
+    {jp:"致す",read:"いたす",roma:"",arti:"melakukan"},
+    {jp:"遅れる",read:"おくれる",roma:"",arti:"ada / menjadi"},
+    {jp:"調べる",read:"しらべる",roma:"",arti:"meneliti"},
+    {jp:"直す",read:"なおす",roma:"",arti:"memperbaiki"},
+    {jp:"直る",read:"なおる",roma:"",arti:"ada / menjadi"},
+    {jp:"通う",read:"かよう",roma:"",arti:"pulang-pergi kerja"},
+    {jp:"通る",read:"とおる",roma:"",arti:"melewati"},
+    {jp:"漬ける",read:"つける",roma:"",arti:"merendam"},
+    {jp:"釣る",read:"つる",roma:"",arti:"ikan"},
+    {jp:"伝える",read:"つたえる",roma:"",arti:"laporan"},
+    {jp:"塗る",read:"ぬる",roma:"",arti:"melukis"},
+    {jp:"怒る",read:"おこる",roma:"",arti:"marah"},
+    {jp:"倒れる",read:"たおれる",roma:"",arti:"rusak"},
+    {jp:"投げる",read:"なげる",roma:"",arti:"membuang"},
+    {jp:"盗む",read:"ぬすむ",roma:"",arti:"mencuri"},
+    {jp:"踏む",read:"ふむ",roma:"",arti:"menginjak"},
+    {jp:"逃げる",read:"にげる",roma:"",arti:"melarikan diri"},
+    {jp:"動く",read:"うごく",roma:"",arti:"pindah"},
+    {jp:"届ける",read:"とどける",roma:"",arti:"mencapai"},
+    {jp:"入院",read:"にゅういんする",roma:"",arti:"merawat di rumah sakit"},
+    {jp:"入学",read:"にゅうがくする",roma:"",arti:"masuk sekolah"},
+    {jp:"泊まる",read:"とまる",roma:"",arti:"menginap di"},
+    {jp:"比べる",read:"くらべる",roma:"",arti:"membandingkan"},
+    {jp:"付く",read:"つく",roma:"",arti:"ada / menjadi"},
+    {jp:"負ける",read:"まける",roma:"",arti:"kehilangan"},
+    {jp:"払う",read:"はらう",roma:"",arti:"membayar"},
+    {jp:"沸かす",read:"わかす",roma:"",arti:"merebus"},
+    {jp:"沸く",read:"わく",roma:"",arti:"merebus"},
+    {jp:"聞こえる",read:"きこえる",roma:"",arti:"ada / menjadi"},
+    {jp:"別れる",read:"わかれる",roma:"",arti:"memisahkan"},
+    {jp:"変える",read:"かえる",roma:"",arti:"berubah"},
+    {jp:"変わる",read:"かわる",roma:"",arti:"berubah"},
+    {jp:"片付ける",read:"かたづける",roma:"",arti:"merapikan"},
+    {jp:"捕まえる",read:"つかまえる",roma:"",arti:"menyita"},
+    {jp:"暮れる",read:"くれる",roma:"",arti:"menjadi gelap"},
+    {jp:"包む",read:"つつむ",roma:"",arti:"membungkus"},
+    {jp:"放送",read:"ほうそうする",roma:"",arti:"menyiarkan"},
+    {jp:"訪ねる",read:"たずねる",roma:"",arti:"mengunjungi"},
+    {jp:"亡くなる",read:"なくなる",roma:"",arti:"mati"},
+    {jp:"眠る",read:"ねむる",roma:"",arti:"tidur"},
+    {jp:"無くなる",read:"なくなる",roma:"",arti:"menghilang"},
+    {jp:"鳴る",read:"なる",roma:"",arti:"terdengar"},
+    {jp:"戻る",read:"もどる",roma:"",arti:"berbalik"},
+    {jp:"役に立つ",read:"やくにたつ",roma:"",arti:"ada / menjadi"},
+    {jp:"輸出",read:"ゆしゅつする",roma:"",arti:"mengekspor"},
+    {jp:"輸入",read:"ゆにゅうする",roma:"",arti:"mengimpor"},
+    {jp:"揺れる",read:"ゆれる",roma:"",arti:"mengocok"},
+    {jp:"踊る",read:"おどる",roma:"",arti:"menari"},
+    {jp:"落す",read:"おとす",roma:"",arti:"menjatuhkan"},
+    {jp:"落る",read:"おちる",roma:"",arti:"jatuh"},
+    {jp:"立てる",read:"たてる",roma:"",arti:"mendirikan sesuatu"},
+    {jp:"冷える",read:"ひえる",roma:"",arti:"tumbuh"},
+    {jp:"連れる",read:"つれる",roma:"",arti:"memimpin"}
+  ],
+  "Kata Sifat":[
+    {jp:"うれしい",read:"うれしい",roma:"",arti:"senang"},
+    {jp:"おかしい",read:"おかしい",roma:"",arti:"strange or funny"},
+    {jp:"すばらしい",read:"すばらしい",roma:"",arti:"luar biasa"},
+    {jp:"よろしい",read:"よろしい",roma:"",arti:"baik"},
+    {jp:"厳しい",read:"きびしい",roma:"",arti:"strict"},
+    {jp:"寂しい",read:"さびしい",roma:"",arti:"lonely"},
+    {jp:"正しい",read:"ただしい",roma:"",arti:"benar"},
+    {jp:"恥ずかしい",read:"はずかしい",roma:"",arti:"malu"},
+    {jp:"珍しい",read:"めずらしい",roma:"",arti:"rare"},
+    {jp:"悲しい",read:"かなしい",roma:"",arti:"sedih"},
+    {jp:"美しい",read:"うつくしい",roma:"",arti:"indah"},
+    {jp:"優しい",read:"やさしい",roma:"",arti:"jenis"}
+  ],
+  "Lainnya":[
+    {jp:"あ",read:"あ",roma:"",arti:"ah"},
+    {jp:"ああ",read:"ああ",roma:"",arti:"like that"},
+    {jp:"うそ",read:"うそ",roma:"",arti:"kebohongan"},
+    {jp:"うち",read:"うち",roma:"",arti:"dalam"},
+    {jp:"うん",read:"うん",roma:"",arti:"ya"},
+    {jp:"お宅",read:"おたく",roma:"",arti:"your house"},
+    {jp:"お礼",read:"おれい",roma:"",arti:"expression of gratitude"},
+    {jp:"ガス",read:"ガス",roma:"",arti:"petrol"},
+    {jp:"こと",read:"こと",roma:"",arti:"benda"},
+    {jp:"ごみ",read:"ごみ",roma:"",arti:"rubbish"},
+    {jp:"すり",read:"すり",roma:"",arti:"pickpocket"},
+    {jp:"ぜひ",read:"ぜひ",roma:"",arti:"without fail"},
+    {jp:"だめ",read:"だめ",roma:"",arti:"no good"},
+    {jp:"つき",read:"つき",roma:"",arti:"bulan"},
+    {jp:"のど",read:"のど",roma:"",arti:"tenggorokan"},
+    {jp:"はず",read:"はず",roma:"",arti:"it should be so"},
+    {jp:"ひげ",read:"ひげ",roma:"",arti:"jenggot"},
+    {jp:"ビル",read:"ビル",roma:"",arti:"building or bill"},
+    {jp:"ベル",read:"ベル",roma:"",arti:"lonceng"},
+    {jp:"ほど",read:"ほど",roma:"",arti:"extent"},
+    {jp:"まず",read:"まず",roma:"",arti:"first of all"},
+    {jp:"もし",read:"もし",roma:"",arti:"if"},
+    {jp:"レジ",read:"レジ",roma:"",arti:"mendaftar / kasir"},
+    {jp:"安心",read:"あんしん",roma:"",arti:"kelegaan"},
+    {jp:"安全",read:"あんぜん",roma:"",arti:"keselamatan"},
+    {jp:"以下",read:"いか",roma:"",arti:"kurang dari"},
+    {jp:"以外",read:"いがい",roma:"",arti:"with the exception of"},
+    {jp:"以上",read:"いじょう",roma:"",arti:"lebih dari"},
+    {jp:"以内",read:"いない",roma:"",arti:"dalam"},
+    {jp:"意見",read:"いけん",roma:"",arti:"pendapat"},
+    {jp:"為",read:"ため",roma:"",arti:"untuk"},
+    {jp:"医学",read:"いがく",roma:"",arti:"ilmu kedokteran"},
+    {jp:"一度",read:"いちど",roma:"",arti:"sekali"},
+    {jp:"雲",read:"くも",roma:"",arti:"awan"},
+    {jp:"億",read:"おく",roma:"",arti:"one hundred million"},
+    {jp:"屋上",read:"おくじょう",roma:"",arti:"rooftop"},
+    {jp:"音",read:"おと",roma:"",arti:"suara"},
+    {jp:"下宿",read:"げしゅく",roma:"",arti:"lodging"},
+    {jp:"下着",read:"したぎ",roma:"",arti:"underwear"},
+    {jp:"家内",read:"かない",roma:"",arti:"housewife"},
+    {jp:"科学",read:"かがく",roma:"",arti:"ilmu pengetahuan"},
+    {jp:"火",read:"ひ",roma:"",arti:"api"},
+    {jp:"火事",read:"かじ",roma:"",arti:"api"},
+    {jp:"花見",read:"はなみ",roma:"",arti:"cherry-blossom viewing"},
+    {jp:"課長",read:"かちょう",roma:"",arti:"section manager"},
+    {jp:"会議",read:"かいぎ",roma:"",arti:"rapat"},
+    {jp:"会場",read:"かいじょう",roma:"",arti:"aula / tempat pertemuan"},
+    {jp:"会話",read:"かいわ",roma:"",arti:"percakapan"},
+    {jp:"海岸",read:"かいがん",roma:"",arti:"pantai"},
+    {jp:"皆",read:"みな",roma:"",arti:"everybody"},
+    {jp:"確か",read:"たしか",roma:"",arti:"definite"},
+    {jp:"割合",read:"わりあい",roma:"",arti:"tarif / tingkat"},
+    {jp:"簡単",read:"かんたん",roma:"",arti:"sederhana"},
+    {jp:"間",read:"あいだ",roma:"",arti:"ruang"},
+    {jp:"関係",read:"かんけい",roma:"",arti:"hubungan"},
+    {jp:"危険",read:"きけん",roma:"",arti:"bahaya"},
+    {jp:"機会",read:"きかい",roma:"",arti:"kesempatan"},
+    {jp:"帰り",read:"かえり",roma:"",arti:"kembali"},
+    {jp:"気",read:"き",roma:"",arti:"semangat"},
+    {jp:"気分",read:"きぶん",roma:"",arti:"suasana hati"},
+    {jp:"汽車",read:"きしゃ",roma:"",arti:"kereta uap"},
+    {jp:"季節",read:"きせつ",roma:"",arti:"musim"},
+    {jp:"規則",read:"きそく",roma:"",arti:"regulations"},
+    {jp:"技術",read:"ぎじゅつ",roma:"",arti:"seni"},
+    {jp:"客",read:"きゃく",roma:"",arti:"tamu"},
+    {jp:"急",read:"きゅう",roma:"",arti:"urgent"},
+    {jp:"急行",read:"きゅうこう",roma:"",arti:"speedy"},
+    {jp:"競争",read:"きょうそう",roma:"",arti:"kompetisi"},
+    {jp:"教育",read:"きょういく",roma:"",arti:"pendidikan"},
+    {jp:"教会",read:"きょうかい",roma:"",arti:"gereja"},
+    {jp:"興味",read:"きょうみ",roma:"",arti:"minat"},
+    {jp:"鏡",read:"かがみ",roma:"",arti:"cermin"},
+    {jp:"近所",read:"きんじょ",roma:"",arti:"lingkungan / lingkungan sekitar"},
+    {jp:"苦い",read:"にがい",roma:"",arti:"pahit"},
+    {jp:"具合",read:"ぐあい",roma:"",arti:"kondisi"},
+    {jp:"空気",read:"くうき",roma:"",arti:"udara"},
+    {jp:"空港",read:"くうこう",roma:"",arti:"bandara"},
+    {jp:"隅",read:"すみ",roma:"",arti:"sudut"},
+    {jp:"君",read:"きみ",roma:"",arti:"kamu"},
+    {jp:"形",read:"かたち",roma:"",arti:"bentuk"},
+    {jp:"景色",read:"けしき",roma:"",arti:"adegan"},
+    {jp:"経済",read:"けいざい",roma:"",arti:"finance"},
+    {jp:"警察",read:"けいさつ",roma:"",arti:"polisi"},
+    {jp:"血",read:"ち",roma:"",arti:"darah"},
+    {jp:"研究",read:"けんきゅう",roma:"",arti:"penelitian"},
+    {jp:"絹",read:"きぬ",roma:"",arti:"sutra"},
+    {jp:"見物",read:"けんぶつ",roma:"",arti:"sightseeing"},
+    {jp:"原因",read:"げんいん",roma:"",arti:"penyebab"},
+    {jp:"湖",read:"みずうみ",roma:"",arti:"danau"},
+    {jp:"交通",read:"こうつう",roma:"",arti:"lalu lintas"},
+    {jp:"光",read:"ひかり",roma:"",arti:"ringan"},
+    {jp:"工業",read:"こうぎょう",roma:"",arti:"industri manufaktur"},
+    {jp:"工場",read:"こうじょう",roma:"",arti:"pabrik"},
+    {jp:"校長",read:"こうちょう",roma:"",arti:"headmaster"},
+    {jp:"港",read:"みなと",roma:"",arti:"pelabuhan"},
+    {jp:"講義",read:"こうぎ",roma:"",arti:"kuliah"},
+    {jp:"講堂",read:"こうどう",roma:"",arti:"aula"},
+    {jp:"郊外",read:"こうがい",roma:"",arti:"outskirts"},
+    {jp:"高校",read:"こうこう",roma:"",arti:"SMA"},
+    {jp:"国際",read:"こくさい",roma:"",arti:"internasional"},
+    {jp:"今度",read:"こんど",roma:"",arti:"sekarang"},
+    {jp:"今夜",read:"こんや",roma:"",arti:"malam ini"},
+    {jp:"砂",read:"すな",roma:"",arti:"pasir"},
+    {jp:"最近",read:"さいきん",roma:"",arti:"latest"},
+    {jp:"最後",read:"さいご",roma:"",arti:"terakhir"},
+    {jp:"最初",read:"さいしょ",roma:"",arti:"awal"},
+    {jp:"妻",read:"つま",roma:"",arti:"istri"},
+    {jp:"坂",read:"さか",roma:"",arti:"lereng"},
+    {jp:"産業",read:"さんぎょう",roma:"",arti:"industri"},
+    {jp:"残念",read:"ざんねん",roma:"",arti:"disappointment"},
+    {jp:"仕方",read:"しかた",roma:"",arti:"cara"},
+    {jp:"子",read:"こ",roma:"",arti:"anak"},
+    {jp:"市",read:"し",roma:"",arti:"kota"},
+    {jp:"市民",read:"しみん",roma:"",arti:"warga"},
+    {jp:"指",read:"ゆび",roma:"",arti:"jari"},
+    {jp:"指輪",read:"ゆびわ",roma:"",arti:"finger ring"},
+    {jp:"枝",read:"えだ",roma:"",arti:"cabang"},
+    {jp:"糸",read:"いと",roma:"",arti:"benang"},
+    {jp:"試験",read:"しけん",roma:"",arti:"ujian / pemeriksaan"},
+    {jp:"試合",read:"しあい",roma:"",arti:"pertandingan"},
+    {jp:"事故",read:"じこ",roma:"",arti:"kecelakaan"},
+    {jp:"字",read:"じ",roma:"",arti:"character"},
+    {jp:"寺",read:"てら",roma:"",arti:"kuil"},
+    {jp:"時代",read:"じだい",roma:"",arti:"era"},
+    {jp:"自由",read:"じゆう",roma:"",arti:"kebebasan"},
+    {jp:"辞典",read:"じてん",roma:"",arti:"kamus"},
+    {jp:"失敗",read:"しっぱい",roma:"",arti:"kegagalan"},
+    {jp:"社会",read:"しゃかい",roma:"",arti:"masyarakat"},
+    {jp:"社長",read:"しゃちょう",roma:"",arti:"company president"},
+    {jp:"手袋",read:"てぶくろ",roma:"",arti:"sarung tangan"},
+    {jp:"趣味",read:"しゅみ",roma:"",arti:"hobi"},
+    {jp:"首",read:"くび",roma:"",arti:"leher"},
+    {jp:"受付",read:"うけつけ",roma:"",arti:"struk"},
+    {jp:"周り",read:"まわり",roma:"",arti:"sekitar"},
+    {jp:"習慣",read:"しゅうかん",roma:"",arti:"adat"},
+    {jp:"舟",read:"ふね",roma:"",arti:"kapal"},
+    {jp:"住所",read:"じゅうしょ",roma:"",arti:"alamat"},
+    {jp:"十分",read:"じゅうぶん",roma:"",arti:"cukup"},
+    {jp:"柔道",read:"じゅうどう",roma:"",arti:"judo"},
+    {jp:"女性",read:"じょせい",roma:"",arti:"perempuan"},
+    {jp:"将来",read:"しょうらい",roma:"",arti:"masa depan"},
+    {jp:"小説",read:"しょうせつ",roma:"",arti:"novel"},
+    {jp:"小鳥",read:"ことり",roma:"",arti:"small bird"},
+    {jp:"紹介",read:"しょうかい",roma:"",arti:"perkenalan"},
+    {jp:"場合",read:"ばあい",roma:"",arti:"situasi"},
+    {jp:"場所",read:"ばしょ",roma:"",arti:"lokasi"},
+    {jp:"畳",read:"たたみ",roma:"",arti:"tatami"},
+    {jp:"寝坊",read:"ねぼう",roma:"",arti:"sleeping in late"},
+    {jp:"心",read:"こころ",roma:"",arti:"core"},
+    {jp:"森",read:"もり",roma:"",arti:"hutan"},
+    {jp:"深い",read:"ふかい",roma:"",arti:"dalam"},
+    {jp:"真中",read:"まんなか",roma:"",arti:"tengah"},
+    {jp:"神社",read:"じんじゃ",roma:"",arti:"kuil Shinto"},
+    {jp:"親",read:"おや",roma:"",arti:"orang tua"},
+    {jp:"親切",read:"しんせつ",roma:"",arti:"kebaikan"},
+    {jp:"人形",read:"にんぎょう",roma:"",arti:"doll"},
+    {jp:"人口",read:"じんこう",roma:"",arti:"populasi"},
+    {jp:"水泳",read:"すいえい",roma:"",arti:"swimming"},
+    {jp:"水道",read:"すいどう",roma:"",arti:"water supply"},
+    {jp:"数学",read:"すうがく",roma:"",arti:"mathematics"},
+    {jp:"世界",read:"せかい",roma:"",arti:"dunia"},
+    {jp:"凄い",read:"すごい",roma:"",arti:"terrific"},
+    {jp:"政治",read:"せいじ",roma:"",arti:"politik"},
+    {jp:"星",read:"ほし",roma:"",arti:"bintang"},
+    {jp:"盛ん",read:"さかん",roma:"",arti:"popularity"},
+    {jp:"西洋",read:"せいよう",roma:"",arti:"negara barat"},
+    {jp:"席",read:"せき",roma:"",arti:"kursi"},
+    {jp:"昔",read:"むかし",roma:"",arti:"zaman dulu"},
+    {jp:"石",read:"いし",roma:"",arti:"batu"},
+    {jp:"説明",read:"せつめい",roma:"",arti:"penjelasan"},
+    {jp:"先輩",read:"せんぱい",roma:"",arti:"senior"},
+    {jp:"戦争",read:"せんそう",roma:"",arti:"perang"},
+    {jp:"浅い",read:"あさい",roma:"",arti:"dangkal"},
+    {jp:"線",read:"せん",roma:"",arti:"garis"},
+    {jp:"祖父",read:"そふ",roma:"",arti:"kakek"},
+    {jp:"祖母",read:"そぼ",roma:"",arti:"nenek"},
+    {jp:"草",read:"くさ",roma:"",arti:"rumput"},
+    {jp:"息子",read:"むすこ",roma:"",arti:"anak laki-laki"},
+    {jp:"卒業",read:"そつぎょう",roma:"",arti:"graduation"},
+    {jp:"台風",read:"たいふう",roma:"",arti:"topan"},
+    {jp:"大事",read:"だいじ",roma:"",arti:"penting"},
+    {jp:"大体",read:"だいたい",roma:"",arti:"umumnya"},
+    {jp:"大分",read:"だいぶ",roma:"",arti:"greatly"},
+    {jp:"棚",read:"たな",roma:"",arti:"shelves"},
+    {jp:"暖房",read:"だんぼう",roma:"",arti:"heating"},
+    {jp:"男性",read:"だんせい",roma:"",arti:"laki-laki"},
+    {jp:"地震",read:"じしん",roma:"",arti:"gempa"},
+    {jp:"地理",read:"ちり",roma:"",arti:"geografi"},
+    {jp:"着物",read:"きもの",roma:"",arti:"kimono"},
+    {jp:"中々",read:"なかなか",roma:"",arti:"cukup banyak"},
+    {jp:"昼間",read:"ひるま",roma:"",arti:"siang hari"},
+    {jp:"注意",read:"ちゅうい",roma:"",arti:"perhatian"},
+    {jp:"注射",read:"ちゅうしゃ",roma:"",arti:"suntikan"},
+    {jp:"虫",read:"むし",roma:"",arti:"serangga"},
+    {jp:"丁寧",read:"ていねい",roma:"",arti:"sopan"},
+    {jp:"泥棒",read:"どろぼう",roma:"",arti:"pencuri"},
+    {jp:"適当",read:"てきとう",roma:"",arti:"suitability"},
+    {jp:"店員",read:"てんいん",roma:"",arti:"pramuniaga"},
+    {jp:"点",read:"てん",roma:"",arti:"titik / poin"},
+    {jp:"田舎",read:"いなか",roma:"",arti:"pedesaan"},
+    {jp:"電灯",read:"でんとう",roma:"",arti:"electric light"},
+    {jp:"電報",read:"でんぽう",roma:"",arti:"telegram"},
+    {jp:"途中",read:"とちゅう",roma:"",arti:"on the way"},
+    {jp:"都",read:"と",roma:"",arti:"metropolitan"},
+    {jp:"都合",read:"つごう",roma:"",arti:"circumstances"},
+    {jp:"島",read:"しま",roma:"",arti:"pulau"},
+    {jp:"湯",read:"ゆ",roma:"",arti:"hot water"},
+    {jp:"答",read:"こたえ",roma:"",arti:"tanggapan"},
+    {jp:"道具",read:"どうぐ",roma:"",arti:"alat"},
+    {jp:"特に",read:"とくに",roma:"",arti:"particularly"},
+    {jp:"特急",read:"とっきゅう",roma:"",arti:"kereta ekspres terbatas"},
+    {jp:"特別",read:"とくべつ",roma:"",arti:"khusus"},
+    {jp:"日",read:"ひ",roma:"",arti:"hari"},
+    {jp:"日記",read:"にっき",roma:"",arti:"jurnal"},
+    {jp:"熱",read:"ねつ",roma:"",arti:"demam"},
+    {jp:"拝見",read:"はいけんする",roma:"",arti:"melihat"},
+    {jp:"背中",read:"せなか",roma:"",arti:"punggung"},
+    {jp:"倍",read:"ばい",roma:"",arti:"double"},
+    {jp:"発音",read:"はつおん",roma:"",arti:"pronunciation"},
+    {jp:"髪",read:"かみ",roma:"",arti:"rambut"},
+    {jp:"反対",read:"はんたい",roma:"",arti:"oposisi / penentangan"},
+    {jp:"番組",read:"ばんぐみ",roma:"",arti:"program TV atau radio"},
+    {jp:"彼",read:"かれ",roma:"",arti:"dia"},
+    {jp:"彼ら",read:"かれら",roma:"",arti:"mereka"},
+    {jp:"彼女",read:"かのじょ",roma:"",arti:"dia"},
+    {jp:"必ず",read:"かならず",roma:"",arti:"pasti"},
+    {jp:"必要",read:"ひつよう",roma:"",arti:"perlu"},
+    {jp:"表",read:"おもて",roma:"",arti:"depan"},
+    {jp:"品物",read:"しなもの",roma:"",arti:"barang"},
+    {jp:"不便",read:"ふべん",roma:"",arti:"inconvenience"},
+    {jp:"夫",read:"おっと",roma:"",arti:"suami"},
+    {jp:"布団",read:"ふとん",roma:"",arti:"futon"},
+    {jp:"怖い",read:"こわい",roma:"",arti:"menakutkan"},
+    {jp:"普通",read:"ふつう",roma:"",arti:"biasanya"},
+    {jp:"部長",read:"ぶちょう",roma:"",arti:"head of a section"},
+    {jp:"復習",read:"ふくしゅう",roma:"",arti:"revision"},
+    {jp:"複雑",read:"ふくざつ",roma:"",arti:"complexity"},
+    {jp:"文化",read:"ぶんか",roma:"",arti:"budaya"},
+    {jp:"文学",read:"ぶんがく",roma:"",arti:"sastra"},
+    {jp:"文法",read:"ぶんぽう",roma:"",arti:"tata bahasa"},
+    {jp:"米",read:"こめ",roma:"",arti:"uncooked rice"},
+    {jp:"壁",read:"かべ",roma:"",arti:"dinding"},
+    {jp:"別",read:"べつ",roma:"",arti:"berbeda"},
+    {jp:"変",read:"へん",roma:"",arti:"aneh"},
+    {jp:"返事",read:"へんじ",roma:"",arti:"balasan"},
+    {jp:"法律",read:"ほうりつ",roma:"",arti:"hukum"},
+    {jp:"貿易",read:"ぼうえき",roma:"",arti:"perdagangan"},
+    {jp:"僕",read:"ぼく",roma:"",arti:"saya"},
+    {jp:"翻訳",read:"ほんやく",roma:"",arti:"terjemahan"},
+    {jp:"漫画",read:"まんが",roma:"",arti:"komik"},
+    {jp:"味",read:"あじ",roma:"",arti:"flavour"},
+    {jp:"味噌",read:"みそ",roma:"",arti:"pasta kacang / miso"},
+    {jp:"眠い",read:"ねむい",roma:"",arti:"mengantuk"},
+    {jp:"夢",read:"ゆめ",roma:"",arti:"mimpi"},
+    {jp:"無理",read:"むり",roma:"",arti:"mustahil"},
+    {jp:"娘",read:"むすめ",roma:"",arti:"anak perempuan"},
+    {jp:"明日",read:"あす",roma:"",arti:"besok"},
+    {jp:"毛",read:"け",roma:"",arti:"hair or fur"},
+    {jp:"木綿",read:"もめん",roma:"",arti:"katun"},
+    {jp:"約束",read:"やくそく",roma:"",arti:"janji"},
+    {jp:"訳",read:"わけ",roma:"",arti:"arti"},
+    {jp:"遊び",read:"あそび",roma:"",arti:"bermain / drama"},
+    {jp:"予習",read:"よしゅう",roma:"",arti:"preparation for a lesson"},
+    {jp:"予定",read:"よてい",roma:"",arti:"pengaturan"},
+    {jp:"予約",read:"よやく",roma:"",arti:"reservasi"},
+    {jp:"用",read:"よう",roma:"",arti:"penggunaan / memakai"},
+    {jp:"用意",read:"ようい",roma:"",arti:"persiapan"},
+    {jp:"用事",read:"ようじ",roma:"",arti:"things to do"},
+    {jp:"葉",read:"は",roma:"",arti:"daun"},
+    {jp:"踊り",read:"おどり",roma:"",arti:"tarian"},
+    {jp:"利用",read:"りよう",roma:"",arti:"utilization"},
+    {jp:"理由",read:"りゆう",roma:"",arti:"alasan"},
+    {jp:"裏",read:"うら",roma:"",arti:"sisi belakang"},
+    {jp:"留守",read:"るす",roma:"",arti:"ketidakhadiran"},
+    {jp:"旅館",read:"りょかん",roma:"",arti:"ryokan"},
+    {jp:"両方",read:"りょうほう",roma:"",arti:"kedua sisi"},
+    {jp:"力",read:"ちから",roma:"",arti:"kekuatan"},
+    {jp:"林",read:"はやし",roma:"",arti:"hutan"},
+    {jp:"冷房",read:"れいぼう",roma:"",arti:"AC"},
+    {jp:"歴史",read:"れきし",roma:"",arti:"sejarah"},
+    {jp:"連絡",read:"れんらく",roma:"",arti:"kontak"},
+    {jp:"腕",read:"うで",roma:"",arti:"lengan"}
+  ]
+  }
+};
+
+let kotobaLevel="N5", kotobaMode="jp2arti", kotobaCount=10;
+let curKotoba=null, answeredK=false;
+let kQIndex=0, kCorrect=0, kTotal=0, kUnlimited=false;
+const selCats=new Set();
+
+const LEVELS=[
+  {id:"N5",sub:"Pemula"},
+  {id:"N4",sub:"Dasar"},
+  {id:"N3",sub:"Menengah"},
+  {id:"N2",sub:"Menengah Atas"},
+  {id:"N1",sub:"Mahir"}
+];
+
+function renderLevels(){
+  const el=$("levelGrid");
+  el.innerHTML="";
+  LEVELS.forEach(lv=>{
+    const has=!!KOTOBA[lv.id];
+    const b=document.createElement("button");
+    b.className="level-btn";
+    b.innerHTML='<span class="lv">'+lv.id+'</span><span class="lv-sub">'+(has?lv.sub:"Segera")+ '</span>';
+    if(!has){ b.style.opacity=".45"; b.disabled=true; }
+    b.onclick=()=>{
+      if(!has) return;
+      kotobaLevel=lv.id;
+      $("levelBadge").textContent=lv.id;
+      // animasi pindah step
+      const a=$("kStepLevel"), b2=$("kStepOpt");
+      a.style.transition="opacity .28s,transform .28s";
+      a.style.opacity="0"; a.style.transform="translateX(-16px)";
+      setTimeout(()=>{
+        a.style.display="none";
+        b2.style.display="block";
+        b2.style.opacity="0"; b2.style.transform="translateX(16px)";
+        b2.style.transition="opacity .28s,transform .28s";
+        requestAnimationFrame(()=>requestAnimationFrame(()=>{
+          b2.style.opacity="1"; b2.style.transform="translateX(0)";
+        }));
+        selCats.clear();
+        renderKotobaCats();
+        $("startKotoba").disabled=true;
+      }, 280);
+    };
+    el.appendChild(b);
+  });
+}
+
+function renderKotobaCats(){
+  const el=$("kotobaCats");
+  el.innerHTML="";
+  const data=KOTOBA[kotobaLevel]||{};
+  const icons={"Kata Benda":"📦","Kata Kerja":"⚡","Kata Sifat":"✨","Lainnya":"💬"};
+  Object.keys(data).forEach(cat=>{
+    const b=document.createElement("button");
+    b.className="kotoba-cat"+(selCats.has(cat)?" active":"");
+    b.innerHTML=(icons[cat]||"•")+" "+cat+" <span style=\"opacity:.7\">("+data[cat].length+")</span>";
+    b.onclick=()=>{
+      if(selCats.has(cat)) selCats.delete(cat);
+      else selCats.add(cat);
+      b.classList.toggle("active");
+      $("startKotoba").disabled=selCats.size===0;
+    };
+    el.appendChild(b);
+  });
+}
+
+$("goKotoba").onclick=()=>{
+  selCats.clear();
+  $("kStepLevel").style.display="block";
+  $("kStepLevel").style.opacity="1";
+  $("kStepLevel").style.transform="none";
+  $("kStepOpt").style.display="none";
+  renderLevels();
+  goTo("screenKotobaSetup");
+};
+
+$("btnBackLevel").onclick=()=>{
+  const a=$("kStepOpt"), b2=$("kStepLevel");
+  a.style.transition="opacity .28s,transform .28s";
+  a.style.opacity="0"; a.style.transform="translateX(16px)";
+  setTimeout(()=>{
+    a.style.display="none";
+    b2.style.display="block";
+    b2.style.opacity="0"; b2.style.transform="translateX(-16px)";
+    b2.style.transition="opacity .28s,transform .28s";
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      b2.style.opacity="1"; b2.style.transform="translateX(0)";
+    }));
+    selCats.clear();
+  }, 280);
+};
+
+document.querySelectorAll("#kotobaModes .tab").forEach(t=>{
+  t.onclick=()=>{
+    document.querySelectorAll("#kotobaModes .tab").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    kotobaMode=t.dataset.kmode;
+  };
+});
+document.querySelectorAll("#kotobaCount .tab").forEach(t=>{
+  t.onclick=()=>{
+    document.querySelectorAll("#kotobaCount .tab").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    kotobaCount=parseInt(t.dataset.kcount,10);
+  };
+});
+
+function getKotobaPool(){
+  let pool=[];
+  const data=KOTOBA[kotobaLevel]||{};
+  selCats.forEach(c=>{ if(data[c]) pool=pool.concat(data[c]); });
+  return pool;
+}
+
+function updateProgress(){
+  if(kUnlimited){
+    $("progressText").textContent=(kQIndex+1)+" · ∞";
+    $("progressFill").style.width="0%";
+    $("progressRow").style.opacity=".7";
+  } else {
+    $("progressText").textContent=(kQIndex+1)+" / "+kTotal;
+    $("progressFill").style.width=((kQIndex)/Math.max(kTotal,1)*100)+"%";
+    $("progressRow").style.opacity="1";
+  }
+}
+
+function showKotobaQ(){
+  const pool=getKotobaPool();
+  if(!pool.length) return;
+  answeredK=false;
+  curKotoba=pool[Math.floor(Math.random()*pool.length)];
+  const ans=$("ansK");
+  ans.value=""; ans.disabled=false;
+  $("fbK").classList.remove("show","success","error");
+  updateProgress();
+
+  const disp=$("kotobaDisp");
+  const read=$("kotobaRead");
+  disp.classList.remove("fade-in");
+  disp.classList.add("fade-out");
+
+  setTimeout(()=>{
+    if(kotobaMode==="jp2arti"){
+      $("labelK").textContent="Apa artinya?";
+      disp.textContent=curKotoba.jp;
+      read.style.display="block";
+      read.textContent=curKotoba.read+(curKotoba.roma?" · "+curKotoba.roma:"");
+      $("labelInK").textContent="Ketik arti (Indonesia)";
+      ans.placeholder="contoh: air";
+    } else if(kotobaMode==="arti2jp"){
+      $("labelK").textContent="Tulis dalam bahasa Jepang";
+      disp.textContent=curKotoba.arti;
+      read.style.display="none";
+      $("labelInK").textContent="Ketik kanji / hiragana / katakana";
+      ans.placeholder="contoh: 水  atau  みず";
+    } else {
+      $("labelK").textContent="Baca huruf ini (romaji)";
+      disp.textContent=curKotoba.jp;
+      read.style.display="block";
+      read.textContent=curKotoba.read||"";
+      $("labelInK").textContent="Ketik romaji (alphabet)";
+      ans.placeholder="contoh: sarainen";
+    }
+    disp.classList.remove("fade-out");
+    disp.classList.add("fade-in");
+    ans.focus();
+  }, 280);
+}
+
+function normalize(s){
+  return (s||"").toLowerCase().replace(/\s+/g,"").replace(/[・·]/g,"");
+}
+
+// konversi hiragana/katakana → romaji (hepburn sederhana)
+function kanaToRoma(str){
+  if(!str) return "";
+  const M={
+    "あ":"a","い":"i","う":"u","え":"e","お":"o",
+    "か":"ka","き":"ki","く":"ku","け":"ke","こ":"ko",
+    "さ":"sa","し":"shi","す":"su","せ":"se","そ":"so",
+    "た":"ta","ち":"chi","つ":"tsu","て":"te","と":"to",
+    "な":"na","に":"ni","ぬ":"nu","ね":"ne","の":"no",
+    "は":"ha","ひ":"hi","ふ":"fu","へ":"he","ほ":"ho",
+    "ま":"ma","み":"mi","む":"mu","め":"me","も":"mo",
+    "や":"ya","ゆ":"yu","よ":"yo",
+    "ら":"ra","り":"ri","る":"ru","れ":"re","ろ":"ro",
+    "わ":"wa","を":"wo","ん":"n",
+    "が":"ga","ぎ":"gi","ぐ":"gu","げ":"ge","ご":"go",
+    "ざ":"za","じ":"ji","ず":"zu","ぜ":"ze","ぞ":"zo",
+    "だ":"da","ぢ":"ji","づ":"zu","で":"de","ど":"do",
+    "ば":"ba","び":"bi","ぶ":"bu","べ":"be","ぼ":"bo",
+    "ぱ":"pa","ぴ":"pi","ぷ":"pu","ぺ":"pe","ぽ":"po",
+    "きゃ":"kya","きゅ":"kyu","きょ":"kyo",
+    "しゃ":"sha","しゅ":"shu","しょ":"sho",
+    "ちゃ":"cha","ちゅ":"chu","ちょ":"cho",
+    "にゃ":"nya","にゅ":"nyu","にょ":"nyo",
+    "ひゃ":"hya","ひゅ":"hyu","ひょ":"hyo",
+    "みゃ":"mya","みゅ":"myu","みょ":"myo",
+    "りゃ":"rya","りゅ":"ryu","りょ":"ryo",
+    "ぎゃ":"gya","ぎゅ":"gyu","ぎょ":"gyo",
+    "じゃ":"ja","じゅ":"ju","じょ":"jo",
+    "びゃ":"bya","びゅ":"byu","びょ":"byo",
+    "ぴゃ":"pya","ぴゅ":"pyu","ぴょ":"pyo",
+    "っ":"","ぁ":"a","ぃ":"i","ぅ":"u","ぇ":"e","ぉ":"o",
+    "ゃ":"ya","ゅ":"yu","ょ":"yo","ー":"",
+    "ア":"a","イ":"i","ウ":"u","エ":"e","オ":"o",
+    "カ":"ka","キ":"ki","ク":"ku","ケ":"ke","コ":"ko",
+    "サ":"sa","シ":"shi","ス":"su","セ":"se","ソ":"so",
+    "タ":"ta","チ":"chi","ツ":"tsu","テ":"te","ト":"to",
+    "ナ":"na","ニ":"ni","ヌ":"nu","ネ":"ne","ノ":"no",
+    "ハ":"ha","ヒ":"hi","フ":"fu","ヘ":"he","ホ":"ho",
+    "マ":"ma","ミ":"mi","ム":"mu","メ":"me","モ":"mo",
+    "ヤ":"ya","ユ":"yu","ヨ":"yo",
+    "ラ":"ra","リ":"ri","ル":"ru","レ":"re","ロ":"ro",
+    "ワ":"wa","ヲ":"wo","ン":"n",
+    "ガ":"ga","ギ":"gi","グ":"gu","ゲ":"ge","ゴ":"go",
+    "ザ":"za","ジ":"ji","ズ":"zu","ゼ":"ze","ゾ":"zo",
+    "ダ":"da","ヂ":"ji","ヅ":"zu","デ":"de","ド":"do",
+    "バ":"ba","ビ":"bi","ブ":"bu","ベ":"be","ボ":"bo",
+    "パ":"pa","ピ":"pi","プ":"pu","ペ":"pe","ポ":"po",
+    "キャ":"kya","キュ":"kyu","キョ":"kyo",
+    "シャ":"sha","シュ":"shu","ショ":"sho",
+    "チャ":"cha","チュ":"chu","チョ":"cho",
+    "ニャ":"nya","ニュ":"nyu","ニョ":"nyo",
+    "ヒャ":"hya","ヒュ":"hyu","ヒョ":"hyo",
+    "ミャ":"mya","ミュ":"myu","ミョ":"myo",
+    "リャ":"rya","リュ":"ryu","リョ":"ryo",
+    "ギャ":"gya","ギュ":"gyu","ギョ":"gyo",
+    "ジャ":"ja","ジュ":"ju","ジョ":"jo",
+    "ビャ":"bya","ビュ":"byu","ビョ":"byo",
+    "ピャ":"pya","ピュ":"pyu","ピョ":"pyo",
+    "ッ":"","ァ":"a","ィ":"i","ゥ":"u","ェ":"e","ォ":"o",
+    "ャ":"ya","ュ":"yu","ョ":"yo"
+  };
+  let s=str, out="", i=0;
+  while(i<s.length){
+    // sokuon: っ + next
+    if((s[i]==="っ"||s[i]==="ッ") && i+1<s.length){
+      const two=s.slice(i+1,i+3);
+      const one=s[i+1];
+      const r=M[two]||M[one]||"";
+      if(r){ out+=r[0]; i++; continue; }
+    }
+    const two=s.slice(i,i+2);
+    if(M[two]){ out+=M[two]; i+=2; continue; }
+    const one=s[i];
+    if(M[one]!==undefined){ out+=M[one]; i++; continue; }
+    // skip kanji/unknown
+    i++;
+  }
+  return out;
+}
+
+function getRoma(k){
+  if(k.roma) return k.roma;
+  return kanaToRoma(k.read||"");
+}
+
+function finishKotoba(){
+  $("resultScore").textContent=kCorrect+" / "+kTotal;
+  $("resultDetail").textContent="Benar "+kCorrect+" dari "+kTotal+" soal · Level "+kotobaLevel;
+  goTo("screenKotobaResult");
+}
+
+function checkKotoba(){
+  if(answeredK||!curKotoba) return;
+  const raw=$("ansK").value.trim();
+  if(!raw){ $("ansK").focus(); return; }
+  answeredK=true;
+  $("ansK").disabled=true;
+  let ok=false, det="";
+
+  if(kotobaMode==="jp2arti"){
+    const u=normalize(raw);
+    const targets=curKotoba.arti.toLowerCase().split(/[\/,]/).map(s=>normalize(s.trim())).filter(Boolean);
+    // harus cocok persis dengan salah satu arti (setelah normalisasi)
+    ok=targets.some(t=>u===t);
+    det=ok?"Benar · +12":"Arti: "+curKotoba.arti+" · "+curKotoba.read;
+  } else if(kotobaMode==="arti2jp"){
+    const u=raw.replace(/\s+/g,"");
+    ok=u===curKotoba.jp || u===curKotoba.read;
+    det=ok?"Benar · +12":curKotoba.jp+" ("+curKotoba.read+")";
+  } else {
+    // selalu cek romaji alphabet
+    const u=normalize(raw);
+    const roma=normalize(getRoma(curKotoba));
+    const roma2=roma.replace(/ou/g,"o").replace(/uu/g,"u").replace(/oo/g,"o");
+    const roma3=roma.replace(/shi/g,"si").replace(/chi/g,"ti").replace(/tsu/g,"tu").replace(/fu/g,"hu");
+    ok=u===roma || u===roma2 || u===roma3 || u===normalize(roma3.replace(/ou/g,"o").replace(/uu/g,"u"));
+    det=ok?"Benar · +12":"Romaji: "+(getRoma(curKotoba)||curKotoba.read)+" · "+curKotoba.read;
+  }
+
+  const fb=$("fbK");
+  fb.classList.remove("success","error");
+  fb.classList.add("show");
+  if(ok){
+    fb.classList.add("success");
+    $("fbIconK").textContent="✓";
+    $("fbTextK").textContent="Benar!";
+    $("fbDetK").textContent=det;
+    addScore(12);
+    kCorrect++;
+    spawn("partK");
+  } else {
+    fb.classList.add("error");
+    $("fbIconK").textContent="✗";
+    $("fbTextK").textContent="Belum tepat";
+    $("fbDetK").textContent=det;
+    $("cardK").classList.add("shake");
+    setTimeout(()=>$("cardK").classList.remove("shake"),520);
+  }
+
+  kQIndex++;
+  setTimeout(()=>{
+    if(!kUnlimited && kQIndex>=kTotal){
+      finishKotoba();
+    } else {
+      showKotobaQ();
+    }
+  }, ok?1100:1600);
+}
+
+$("startKotoba").onclick=()=>{
+  if(selCats.size===0) return;
+  kUnlimited=(kotobaCount===0);
+  kTotal=kUnlimited?0:kotobaCount;
+  kQIndex=0;
+  kCorrect=0;
+  goTo("screenKotobaPlay");
+  setTimeout(showKotobaQ, 320);
+};
+$("btnCheckK").onclick=checkKotoba;
+$("btnNewK").onclick=()=>{
+  if(answeredK) return;
+  // skip counts as wrong progress
+  kQIndex++;
+  answeredK=true;
+  if(!kUnlimited && kQIndex>=kTotal) finishKotoba();
+  else showKotobaQ();
+};
+$("ansK").onkeydown=e=>{
+  if(e.key==="Enter"){ e.preventDefault(); if(!answeredK) checkKotoba(); }
+};
+$("btnResultHome").onclick=()=>goTo("screenHome");
+$("btnResultAgain").onclick=()=>{
+  const a=$("kStepLevel");
+  a.style.display="block"; a.style.opacity="1"; a.style.transform="none";
+  $("kStepOpt").style.display="none";
+  selCats.clear();
+  renderLevels();
+  goTo("screenKotobaSetup");
+};
+
+</script>
+</body>
+</html>
